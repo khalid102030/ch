@@ -456,6 +456,7 @@
     if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(ok,fallback);else fallback();
   }
 
+  $("#openAdvanced").onclick=function(){openSheet($("#advSheet"));};
   $("#openSessions").onclick=function(){renderSessions();openSheet($("#sessSheet"));};
   function renderSessions(){
     var list=$("#sessList");var items=Object.values(getSessions()).sort(function(a,b){return (b.updated||b.when)-(a.updated||a.when);});
