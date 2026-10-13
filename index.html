@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مترجم الاجتماعات</title>
+<style>
+  :root{
+    --bg:#10161c; --panel:#161f28; --line:#243040;
+    --ink:#e8eef4; --muted:#7f93a6; --muted2:#5d6f80;
+    --jade:#2fb67c; --amber:#e0a83d; --rose:#d9534f; --focus:#4aa8ff;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme:light){
+    :root:not([data-theme="dark"]){
+      --bg:#f3f5f7; --panel:#ffffff; --line:#e2e8ee;
+      --ink:#1a2530; --muted:#687787; --muted2:#95a3b1; --jade:#1d8a5a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#10161c; --panel:#161f28; --line:#243040;
+    --ink:#e8eef4; --muted:#7f93a6; --muted2:#5d6f80; --jade:#2fb67c;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Segoe UI","Noto Sans Arabic",Tahoma,system-ui,sans-serif;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+
+  header{flex:0 0 auto;display:flex;align-items:center;padding:14px 18px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--muted2);transition:background .25s}
+  .dot.live{background:var(--jade);box-shadow:0 0 0 4px color-mix(in srgb,var(--jade) 25%,transparent)}
+  .dot.rec{background:var(--rose);box-shadow:0 0 0 4px color-mix(in srgb,var(--rose) 25%,transparent)}
+  .spacer{flex:1}
+  .iconbtn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--muted);width:44px;height:44px;border-radius:12px;font-size:19px;cursor:pointer}
+  .iconbtn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+  .banner{margin:0 18px 8px;background:color-mix(in srgb,var(--amber) 16%,transparent);border:1px solid color-mix(in srgb,var(--amber) 45%,transparent);border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.7}
+
+  main{flex:1 1 auto;overflow-y:auto;padding:8px 18px 10px;display:flex;flex-direction:column;gap:14px;position:relative}
+  .line{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;animation:rise .28s ease-out}
+  @media (prefers-reduced-motion:reduce){.line{animation:none}}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .line.pending,.line.live{border-style:dashed;opacity:.7}
+  .ar{font-size:clamp(22px,3.3vw,34px);line-height:1.5;font-weight:600}
+  .en{font-size:clamp(15px,1.9vw,20px);line-height:1.45;color:var(--muted);margin-top:8px;direction:ltr;text-align:left}
+  .en:empty{display:none}
+  .ts{font-size:11px;color:var(--muted2);margin-top:10px;direction:ltr;text-align:left;letter-spacing:.3px}
+  .ts:empty{display:none}
+  .empty{margin:auto;text-align:center;color:var(--muted);max-width:340px;padding:20px}
+  .empty h2{font-size:18px;margin:0 0 8px;color:var(--ink);font-weight:700}
+  .empty p{margin:0;line-height:1.7;font-size:14px}
+
+  body.hidden main .line,body.hidden main .empty{visibility:hidden}
+  body.hidden main::after{content:attr(data-hiddenmsg);position:absolute;inset:0;display:grid;place-items:center;color:var(--muted2);font-size:14px;text-align:center;padding:30px;pointer-events:none}
+
+  footer{flex:0 0 auto;padding:18px 18px calc(26px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:12px}
+  .mic{appearance:none;border:0;cursor:pointer;width:112px;height:112px;border-radius:50%;background:var(--jade);color:#06130c;font-size:44px;display:grid;place-items:center;transition:transform .12s,background .2s,opacity .2s;box-shadow:0 8px 28px color-mix(in srgb,var(--jade) 35%,transparent)}
+  .mic:active{transform:scale(.95)}
+  .mic:disabled{opacity:.6;cursor:wait}
+  .mic.on{background:var(--rose);color:#fff;box-shadow:0 8px 28px color-mix(in srgb,var(--rose) 40%,transparent);animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--rose) 45%,transparent),0 8px 28px color-mix(in srgb,var(--rose) 40%,transparent)}50%{box-shadow:0 0 0 18px transparent,0 8px 28px color-mix(in srgb,var(--rose) 40%,transparent)}}
+  @media (prefers-reduced-motion:reduce){.mic.on{animation:none}}
+  .mic:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+  .mic.small{width:56px;height:56px;font-size:22px;background:var(--panel);color:var(--muted);border:1px solid var(--line);box-shadow:none}
+  .mic.small.on{background:var(--panel);color:var(--rose);border-color:color-mix(in srgb,var(--rose) 35%,transparent);box-shadow:none;animation:none}
+  body.compact footer{padding-top:10px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));gap:6px}
+  body.compact .status .m{font-size:12px;font-weight:600;color:var(--muted2)}
+  body.compact .status .s{display:none}
+  .blackout{position:fixed;inset:0;background:#000;z-index:100;cursor:none;touch-action:manipulation}
+  .status{text-align:center;max-width:420px}
+  .status .m{font-size:16px;font-weight:700}
+  .status .s{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
+
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:40}
+  .scrim.open{display:block}
+  .sheet{position:fixed;z-index:50;background:var(--panel);left:0;right:0;bottom:0;border-radius:18px 18px 0 0;border-top:1px solid var(--line);padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .25s ease;max-height:90%;overflow-y:auto;max-width:720px;margin:0 auto}
+  .sheet.open{transform:none}
+  .sheet h3{margin:0 0 4px;font-size:17px}
+  .sheet .hint{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 14px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .row.nav{cursor:pointer}
+  .row .rl{font-size:14px;font-weight:600}
+  .row .rd{font-size:12px;color:var(--muted);margin-top:2px}
+  .field{margin:14px 0}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+  .field input,.field select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px 12px;font:inherit;font-size:14px}
+  .field input:focus,.field select:focus{outline:2px solid var(--focus);outline-offset:-1px}
+  .field small{display:block;color:var(--muted2);font-size:12px;margin-top:5px;line-height:1.5}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
+  .seg button{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:9px 12px;cursor:pointer;white-space:nowrap}
+  .seg button[aria-pressed="true"]{background:var(--jade);color:#06130c}
+  .modebar{display:flex;gap:8px;margin:8px 0 6px}
+  .modebar button{flex:1;appearance:none;border:1px solid var(--line);background:var(--bg);color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:11px;border-radius:10px;cursor:pointer}
+  .modebar button[aria-pressed="true"]{border-color:var(--jade);background:color-mix(in srgb,var(--jade) 14%,transparent);color:var(--ink)}
+  .toggle{position:relative;width:48px;height:28px;border-radius:999px;background:var(--line);border:0;cursor:pointer;flex:0 0 auto;transition:background .2s}
+  .toggle::after{content:"";position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+  .toggle[aria-pressed="true"]{background:var(--jade)}
+  .toggle[aria-pressed="true"]::after{transform:translateX(-20px)}
+  .done{width:100%;appearance:none;border:0;background:var(--jade);color:#06130c;font:inherit;font-size:15px;font-weight:700;padding:13px;border-radius:12px;cursor:pointer;margin-top:16px}
+  .done:disabled{opacity:.6;cursor:wait}
+  .ghost{width:100%;appearance:none;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px;font-weight:600;padding:12px;border-radius:12px;cursor:pointer;margin-top:8px}
+  .warn{background:color-mix(in srgb,var(--amber) 16%,transparent);border:1px solid color-mix(in srgb,var(--amber) 45%,transparent);border-radius:10px;padding:11px 13px;font-size:12.5px;line-height:1.6;margin:14px 0}
+  .divider{height:1px;background:var(--line);margin:18px 0}
+  .sub{font-size:13px;font-weight:700;color:var(--muted);margin:4px 0 2px}
+  .sess{border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:10px;background:var(--bg);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .sess .info{flex:1;min-width:150px}.sess .t{font-size:14px;font-weight:600}.sess .d{font-size:12px;color:var(--muted);margin-top:2px}
+  .sess button{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:12px;font-weight:600;padding:7px 11px;border-radius:9px;cursor:pointer}
+  .sess button.del{color:var(--rose);border-color:color-mix(in srgb,var(--rose) 40%,transparent)}
+  .sumbox{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:15px;font-size:14px;line-height:1.8;white-space:pre-wrap;margin-top:12px;max-height:320px;overflow-y:auto}
+  .emptylist{color:var(--muted2);font-size:13px;text-align:center;padding:20px}
+  .backbtn{appearance:none;border:0;background:transparent;color:var(--jade);font:inherit;font-size:14px;font-weight:600;cursor:pointer;padding:0;margin-bottom:12px}
+</style>
+</head>
+<body data-hiddenmsg="الوضع المخفي مُفعّل — التسجيل مستمر في الخلفية.">
+
+<header>
+  <span class="dot" id="dot"></span>
+  <div class="spacer"></div>
+  <button class="iconbtn" id="settingsBtn" aria-label="الإعدادات">⚙</button>
+</header>
+
+<div class="banner" id="banner" style="display:none" role="alert"></div>
+
+<main id="feed">
+  <div class="empty" id="empty">
+    <h2>جاهز للترجمة</h2>
+    <p>اضغط الميكروفون وابدأ. الترجمة فورية بدون صوت. كل التفاصيل في الإعدادات ⚙</p>
+  </div>
+</main>
+
+<footer>
+  <button class="mic" id="micBtn" aria-label="بدء الاستماع">🎙</button>
+  <div class="status">
+    <div class="m" id="statusMain">متوقف</div>
+    <div class="s" id="statusSub">اضغط للبدء</div>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<div class="blackout" id="blackout" hidden></div>
+
+<!-- SETTINGS HUB -->
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="الإعدادات">
+  <h3>الإعدادات</h3>
+  <p class="hint" id="sessionHint">كل شي من هنا.</p>
+
+  <div class="row">
+    <div><div class="rl">لغة الترجمة</div><div class="rd">تتغير فوراً حتى للجمل السابقة</div></div>
+    <div class="seg" role="group" aria-label="اللغة">
+      <button data-lang="both" aria-pressed="true">عربي+En</button>
+      <button data-lang="ar" aria-pressed="false">عربي</button>
+      <button data-lang="en" aria-pressed="false">En</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div><div class="rl">الوضع المخفي</div><div class="rd">يخفي النص والتسجيل مستمر</div></div>
+    <button class="toggle" id="hideToggle" aria-pressed="false" aria-label="الوضع المخفي"></button>
+  </div>
+
+  <div class="row">
+    <div><div class="rl">زر تسجيل صغير</div><div class="rd">زر هادئ لا يلفت الانتباه</div></div>
+    <button class="toggle" id="smallToggle" aria-pressed="true" aria-label="زر تسجيل صغير"></button>
+  </div>
+
+  <div class="row nav" id="blackoutRow">
+    <div><div class="rl">شاشة سوداء ⬛</div><div class="rd">تبدو الشاشة مطفأة والتسجيل مستمر — اضغط مرتين للخروج</div></div>
+    <span style="color:var(--muted)">‹</span>
+  </div>
+
+  <div class="row nav" id="newSessionRow">
+    <div><div class="rl">جلسة جديدة ＋</div><div class="rd">تحفظ الحالية وتبدأ اجتماعاً مستقلاً</div></div>
+    <span style="color:var(--jade)">＋</span>
+  </div>
+
+  <div class="row nav" id="openSessions">
+    <div><div class="rl">الجلسات المحفوظة 🗂</div><div class="rd">افتح، انسخ، أو احذف اجتماعاتك</div></div>
+    <span style="color:var(--muted)">‹</span>
+  </div>
+
+  <div class="row nav" id="openSummary">
+    <div><div class="rl">ملخص النقاش ✦</div><div class="rd">نقاط وقرارات عبر Gemini</div></div>
+    <span style="color:var(--muted)">‹</span>
+  </div>
+
+  <div class="row nav" id="openAdvanced" style="border-bottom:0">
+    <div><div class="rl">إعدادات متقدمة</div><div class="rd">المصدر، الدقة، المفاتيح</div></div>
+    <span style="color:var(--muted)">‹</span>
+  </div>
+
+  <button class="done" id="doneBtn">تم</button>
+</div>
+
+<!-- ADVANCED -->
+<div class="sheet" id="advSheet" role="dialog" aria-modal="true" aria-label="إعدادات متقدمة">
+  <button class="backbtn" data-back>‹ رجوع</button>
+  <h3>إعدادات متقدمة</h3>
+
+  <div class="sub">طريقة التعرّف على الكلام</div>
+  <div class="modebar" role="group" aria-label="الطريقة">
+    <button data-mode="free" aria-pressed="true">مجاني</button>
+    <button data-mode="azure" aria-pressed="false">Azure (دقة أعلى)</button>
+  </div>
+  <small id="modeNote" style="color:var(--muted2);font-size:12px;line-height:1.5;display:block"></small>
+
+  <div class="field">
+    <label for="srcSel">مصدر الصوت</label>
+    <select id="srcSel">
+      <option value="mic">ميكروفون الجهاز (حضوري / سبيكر)</option>
+      <option value="system">صوت النظام — Teams / Zoom (لابتوب + Azure)</option>
+    </select>
+    <small id="srcNote"></small>
+  </div>
+  <div class="warn" id="sysWarn" style="display:none">
+    عند البدء يطلب المتصفح اختيار ما تشاركه:
+    <br>• <b>ويندوز:</b> اختر «الشاشة بالكامل» وفعّل «مشاركة صوت النظام».
+    <br>• <b>ماك:</b> صوت النظام غير متاح؛ افتح الاجتماع في تبويب Chrome واختر التبويب مع «مشاركة صوت التبويب».
+    <br>إشعار المشاركة يظهر لك وحدك ولا يصل للمشاركين.
+  </div>
+
+  <div id="azureFields" style="display:none">
+    <div class="field"><label for="azKey">مفتاح Azure Speech</label><input id="azKey" type="password" placeholder="الصق KEY 1" autocomplete="off"><small>يُحفظ على جهازك فقط.</small></div>
+    <div class="field"><label for="azRegion">المنطقة (Region)</label><input id="azRegion" type="text" placeholder="مثال: uaenorth" autocomplete="off" dir="ltr"></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="sub">Gemini (للملخص + ترجمة أدق في الوضع المجاني)</div>
+  <div class="field"><label for="gemKey">مفتاح Gemini</label><input id="gemKey" type="password" placeholder="الصق المفتاح" autocomplete="off"><small>مجاني من Google AI Studio بدون بطاقة.</small></div>
+  <div class="field">
+    <label for="trEngine">ترجمة الوضع المجاني</label>
+    <select id="trEngine">
+      <option value="auto">Gemini إذا وُجد المفتاح (أدق)</option>
+      <option value="mymemory">المترجم المجاني العام فقط</option>
+    </select>
+    <small>المترجم العام له حد يومي ودقته أقل. Gemini أدق بكثير للصيني.</small>
+  </div>
+  <div class="field">
+    <label for="gemModel">نموذج Gemini</label>
+    <input id="gemModel" type="text" dir="ltr" autocomplete="off" placeholder="gemini-flash-latest">
+    <small>اتركه كما هو. إذا ظهر خطأ «model not found» جرّب: gemini-2.5-flash</small>
+  </div>
+  <button class="done" data-back>حفظ ورجوع</button>
+</div>
+
+<!-- SESSIONS -->
+<div class="sheet" id="sessSheet" role="dialog" aria-modal="true" aria-label="الجلسات">
+  <button class="backbtn" data-back>‹ رجوع</button>
+  <h3>الجلسات المحفوظة</h3>
+  <p class="hint">«فتح» يعرض الجلسة ويكمل عليها لو شغّلت المايك.</p>
+  <div id="sessList"></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="sheet" id="sumSheet" role="dialog" aria-modal="true" aria-label="الملخص">
+  <button class="backbtn" data-back>‹ رجوع</button>
+  <h3>ملخص النقاش</h3>
+  <p class="hint" id="sumHint">نقاط وقرارات وخطوات تالية عبر Gemini.</p>
+  <button class="done" id="genSumBtn">إنشاء الملخص</button>
+  <div class="sumbox" id="sumOut" style="display:none"></div>
+  <button class="ghost" id="copySumBtn" style="display:none">نسخ الملخص</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(s){return document.querySelector(s);};
+  var feed=$("#feed"),empty=$("#empty"),micBtn=$("#micBtn"),dot=$("#dot"),banner=$("#banner");
+  var statusMain=$("#statusMain"),statusSub=$("#statusSub");
+
+  function load(k,d){try{var v=localStorage.getItem("mt_"+k);return v===null?d:v;}catch(e){return d;}}
+  function save(k,v){try{localStorage.setItem("mt_"+k,v);}catch(e){}}
+
+  var NATIVE=typeof window.AndroidSpeech!=="undefined";
+  var IN_FRAME=(function(){try{return window.self!==window.top;}catch(e){return true;}})();
+  var MSG_FRAME="المعاينة داخل Claude لا تسمح بالميكروفون، لذلك لا يظهر طلب الإذن. نزّل الملف وافتحه في Chrome مباشرة، أو افتحه من رابط GitHub Pages (الشرح في التعليمات).";
+  var SDK_URL="https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@1.40.0/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js";
+
+  var state={
+    lang:load("lang","both"),mode:load("mode","free"),src:load("src","mic"),
+    azKey:load("azKey",""),azRegion:load("azRegion",""),
+    gemKey:load("gemKey",""),gemModel:load("gemModel","gemini-flash-latest"),trEngine:load("trEngine","auto"),
+    running:false,starting:false,hidden:false,current:[]
+  };
+  var curId=load("curId","")||null;
+
+  /* ---------- banner / status ---------- */
+  function showBanner(t){banner.textContent=t;banner.style.display="";}
+  function hideBanner(){banner.style.display="none";}
+  function fail(m){statusMain.textContent="تنبيه";statusSub.textContent="";showBanner(m);}
+  var warnTimer=null;
+  function softWarn(m){if(!state.running)return;statusSub.textContent=m;clearTimeout(warnTimer);
+    warnTimer=setTimeout(function(){if(state.running)statusSub.textContent=modeLabel();},6000);}
+  function modeLabel(){return (state.mode==="azure"?"Azure":"مجاني")+" · "+(state.src==="system"&&state.mode==="azure"?"صوت النظام":"ميكروفون");}
+
+  if(IN_FRAME&&!NATIVE)showBanner(MSG_FRAME);
+
+  /* ---------- sheets ---------- */
+  var scrim=$("#scrim");
+  function openSheet(el){document.querySelectorAll(".sheet").forEach(function(s){s.classList.remove("open");});scrim.classList.add("open");el.classList.add("open");}
+  function closeAll(){scrim.classList.remove("open");document.querySelectorAll(".sheet").forEach(function(s){s.classList.remove("open");});}
+  scrim.onclick=function(){persist();closeAll();};
+  $("#settingsBtn").onclick=function(){updateSessionHint();openSheet($("#sheet"));};
+  $("#doneBtn").onclick=closeAll;
+  document.querySelectorAll("[data-back]").forEach(function(b){b.onclick=function(){persist();updateSessionHint();openSheet($("#sheet"));};});
+  function updateSessionHint(){$("#sessionHint").textContent=state.current.length?("الجلسة الحالية: "+state.current.length+" جملة."):"لا توجد جلسة مفتوحة — تبدأ تلقائياً مع أول جملة.";}
+
+  /* ---------- language ---------- */
+  document.querySelectorAll("[data-lang]").forEach(function(b){
+    b.setAttribute("aria-pressed",b.dataset.lang===state.lang);
+    b.onclick=function(){state.lang=b.dataset.lang;save("lang",state.lang);
+      document.querySelectorAll("[data-lang]").forEach(function(x){x.setAttribute("aria-pressed",x===b);});applyLang();};
+  });
+  function applyLangTo(l){l.querySelector(".ar").style.display=state.lang==="en"?"none":"";l.querySelector(".en").style.display=state.lang==="ar"?"none":"";}
+  function applyLang(){feed.querySelectorAll(".line").forEach(applyLangTo);}
+
+  /* ---------- hidden ---------- */
+  var hideToggle=$("#hideToggle");
+  hideToggle.onclick=function(){state.hidden=!state.hidden;hideToggle.setAttribute("aria-pressed",state.hidden);
+    document.body.classList.toggle("hidden",state.hidden);setDot();};
+
+  /* ---------- small mic ---------- */
+  var smallToggle=$("#smallToggle");
+  function applySmall(on){micBtn.classList.toggle("small",on);document.body.classList.toggle("compact",on);smallToggle.setAttribute("aria-pressed",on);}
+  applySmall(load("smallMic","1")==="1");
+  smallToggle.onclick=function(){var on=smallToggle.getAttribute("aria-pressed")!=="true";save("smallMic",on?"1":"0");applySmall(on);};
+
+  /* ---------- black screen ---------- */
+  var blackout=$("#blackout");
+  function nativeDim(on){if(NATIVE&&window.AndroidSpeech.dim){try{window.AndroidSpeech.dim(on);}catch(e){}}}
+  function blackOn(){closeAll();blackout.hidden=false;nativeDim(true);requestWake();}
+  function blackOff(){blackout.hidden=true;nativeDim(false);if(!state.running)releaseWake();}
+  $("#blackoutRow").onclick=blackOn;
+  var lastTap=0;
+  blackout.addEventListener("touchend",function(e){e.preventDefault();var n=Date.now();if(n-lastTap<400){lastTap=0;blackOff();}else lastTap=n;});
+  blackout.addEventListener("dblclick",blackOff);
+
+  /* ---------- advanced ---------- */
+  var azureFields=$("#azureFields"),modeNote=$("#modeNote"),srcSel=$("#srcSel"),srcNote=$("#srcNote"),sysWarn=$("#sysWarn");
+  document.querySelectorAll("[data-mode]").forEach(function(b){
+    b.setAttribute("aria-pressed",b.dataset.mode===state.mode);
+    b.onclick=function(){if(state.running)stopAll();state.mode=b.dataset.mode;
+      document.querySelectorAll("[data-mode]").forEach(function(x){x.setAttribute("aria-pressed",x===b);});reflectMode();};
+  });
+  function reflectMode(){
+    var az=state.mode==="azure";
+    azureFields.style.display=az?"":"none";
+    modeNote.textContent=az?"دقة عالية للصيني ومقاومة للضوضاء والصوت الضعيف. يدعم صوت النظام على اللابتوب. يتطلب مفتاح Azure."
+      :(NATIVE?"مجاني عبر محرك الكلام في الجوال (Google). ميكروفون فقط.":"مجاني عبر Chrome / Edge. ميكروفون فقط.");
+    var sysAllowed=az&&!NATIVE;
+    srcSel.querySelector('[value="system"]').disabled=!sysAllowed;
+    if(!sysAllowed&&state.src==="system"){state.src="mic";}
+    srcSel.value=state.src;reflectSrc();
+  }
+  srcSel.onchange=function(){if(state.running)stopAll();state.src=srcSel.value;reflectSrc();};
+  function reflectSrc(){var sys=state.src==="system";
+    srcNote.textContent=sys?"يلتقط صوت الاجتماع رقمياً من داخل اللابتوب — الأفضل للصوت الضعيف.":"للحضوري أو للصوت الخارج من سبيكر الغرفة.";
+    sysWarn.style.display=sys?"":"none";}
+  $("#azKey").value=state.azKey;$("#azRegion").value=state.azRegion;$("#gemKey").value=state.gemKey;
+  $("#gemModel").value=state.gemModel;$("#trEngine").value=state.trEngine;
+  function persist(){
+    state.azKey=$("#azKey").value.trim();state.azRegion=$("#azRegion").value.trim().toLowerCase().replace(/\s+/g,"");
+    state.gemKey=$("#gemKey").value.trim();state.gemModel=$("#gemModel").value.trim()||"gemini-flash-latest";state.trEngine=$("#trEngine").value;
+    $("#azRegion").value=state.azRegion;$("#gemModel").value=state.gemModel;
+    save("mode",state.mode);save("src",state.src);save("azKey",state.azKey);save("azRegion",state.azRegion);
+    save("gemKey",state.gemKey);save("gemModel",state.gemModel);save("trEngine",state.trEngine);
+  }
+  reflectMode();
+
+  /* ---------- transcript ---------- */
+  function ts(){return new Date().toLocaleTimeString("en-GB");}
+  function hideEmpty(){empty.style.display="none";}
+  function scrollEnd(){feed.scrollTop=feed.scrollHeight;}
+  function makeLine(ar,en,time,cls){
+    var el=document.createElement("div");el.className="line"+(cls?" "+cls:"");
+    el.innerHTML='<div class="ar"></div><div class="en"></div><div class="ts"></div>';
+    el.querySelector(".ar").textContent=ar||"";el.querySelector(".en").textContent=en||"";
+    el.querySelector(".ts").textContent=time||"";applyLangTo(el);return el;
+  }
+  var liveEl=null;
+  function showLive(ar,en){hideEmpty();
+    if(!liveEl){liveEl=makeLine(ar||"…",en||"",null,"live");feed.appendChild(liveEl);}
+    else{liveEl.querySelector(".ar").textContent=ar||"…";liveEl.querySelector(".en").textContent=en||"";}
+    statusMain.textContent="يسمع كلام…";scrollEnd();}
+  function clearLive(){if(liveEl){liveEl.remove();liveEl=null;}if(state.running)statusMain.textContent="يستمع…";}
+  function insertLine(el){hideEmpty();if(liveEl)feed.insertBefore(el,liveEl);else feed.appendChild(el);scrollEnd();}
+  function record(zh,ar,en,el){var t=ts();el.querySelector(".ts").textContent=t;state.current.push({zh:zh||"",ar:ar||"",en:en||"",ts:t});autosave();}
+
+  // ordered queue: lines keep their spoken order even if translations return out of order
+  var queue=Promise.resolve();
+  function enqueue(zh){
+    var el=makeLine("…","",null,"pending");insertLine(el);clearLive();
+    queue=queue.then(function(){return translateBoth(zh);}).then(function(t){
+      var ar=t.ar,en=t.en;
+      if(!ar&&!en){ar="(تعذّرت ترجمة هذه الجملة)";}
+      el.classList.remove("pending");
+      el.querySelector(".ar").textContent=ar;el.querySelector(".en").textContent=en;
+      record(zh,t.ar,t.en,el);
+    }).catch(function(){el.classList.remove("pending");el.querySelector(".ar").textContent="(تعذّرت ترجمة هذه الجملة)";record(zh,"","",el);});
+  }
+  function addFinal(zh,ar,en){clearLive();var el=makeLine(ar,en,null,"");insertLine(el);record(zh,ar,en,el);}
+
+  /* ---------- translation (free mode) ---------- */
+  function translateBoth(zh){
+    if(state.gemKey&&state.trEngine!=="mymemory"){
+      var p="Translate this Mandarin Chinese speech from a business meeting. Speech recognition may contain errors; infer the intended meaning. "+
+        'Return ONLY JSON: {"ar":"natural Arabic translation","en":"natural English translation"}\n\nText: '+zh;
+      return geminiJSON(p).then(function(o){
+        if(o&&(o.ar||o.en))return {ar:o.ar||"",en:o.en||""};
+        throw new Error("empty");
+      }).catch(function(e){softWarn("Gemini تعذّر ("+(e.message||"خطأ").slice(0,60)+") — تحويل للمترجم العام");return mmBoth(zh);});
+    }
+    return mmBoth(zh);
+  }
+  function mmBoth(zh){return Promise.all([mm(zh,"ar"),mm(zh,"en")]).then(function(r){return {ar:r[0],en:r[1]};});}
+  function mm(text,to){
+    return fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(text)+"&langpair=zh-CN|"+to)
+      .then(function(r){return r.json();}).then(function(j){
+        var t=j&&j.responseData&&j.responseData.translatedText;
+        if((j&&j.quotaFinished)||(t&&/MYMEMORY WARNING/i.test(t))){softWarn("انتهى الحد اليومي للمترجم العام — أضف مفتاح Gemini");return "";}
+        return t||"";
+      }).catch(function(){softWarn("تعذّر الاتصال بخدمة الترجمة — تحقق من الإنترنت");return "";});
+  }
+  function gemini(prompt,json){
+    var url="https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(state.gemModel||"gemini-flash-latest")+":generateContent?key="+encodeURIComponent(state.gemKey);
+    var body={contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:0.2}};
+    if(json)body.generationConfig.responseMimeType="application/json";
+    return fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+      .then(function(r){return r.json().catch(function(){return {};}).then(function(j){
+        if(!r.ok)throw new Error((j.error&&j.error.message)||("HTTP "+r.status));
+        var c=j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts;
+        var t=c?c.map(function(p){return p.text||"";}).join(""):"";
+        if(!t)throw new Error("استجابة فارغة");return t;});});
+  }
+  function geminiJSON(p){return gemini(p,true).then(function(t){return JSON.parse(t.replace(/```json|```/g,"").trim());});}
+
+  /* ---------- sessions ---------- */
+  function getSessions(){try{return JSON.parse(localStorage.getItem("mt_sessions")||"{}");}catch(e){return {};}}
+  function setSessions(s){try{localStorage.setItem("mt_sessions",JSON.stringify(s));return true;}catch(e){fail("مساحة الحفظ ممتلئة — احذف جلسات قديمة من «الجلسات المحفوظة».");return false;}}
+  function autosave(){if(!state.current.length)return;
+    if(!curId){curId="s_"+Date.now();save("curId",curId);}
+    var s=getSessions();s[curId]={id:curId,when:(s[curId]&&s[curId].when)||Date.now(),updated:Date.now(),lines:state.current};setSessions(s);}
+  function fmtDate(t){try{return new Date(t).toLocaleString("ar",{dateStyle:"medium",timeStyle:"short"});}catch(e){return new Date(t).toLocaleString();}}
+  function clearFeed(){feed.querySelectorAll(".line").forEach(function(l){l.remove();});liveEl=null;empty.style.display="";}
+  function showSession(it){clearFeed();if(!it.lines.length)return;hideEmpty();
+    it.lines.forEach(function(l){feed.appendChild(makeLine(l.ar||(l.en?"":"(تعذّرت الترجمة)"),l.en,l.ts,""));});scrollEnd();}
+
+  // restore the open session after reopening the app (meeting paused / app closed)
+  (function(){if(!curId)return;var s=getSessions()[curId];if(s&&s.lines&&s.lines.length){state.current=s.lines.slice();showSession(s);}else{curId=null;save("curId","");}})();
+
+  function sessionText(it){return it.lines.map(function(l){return "["+l.ts+"]\n"+(l.ar?l.ar+"\n":"")+(l.en?l.en+"\n":"");}).join("\n");}
+  function copyText(t,btn,label){
+    function ok(){if(btn){btn.textContent="تم ✓";setTimeout(function(){btn.textContent=label;},1500);}}
+    function fallback(){var ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+      try{document.execCommand("copy");ok();}catch(e){}ta.remove();}
+    if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(ok,fallback);else fallback();
+  }
+
+  $("#openSessions").onclick=function(){renderSessions();openSheet($("#sessSheet"));};
+  function renderSessions(){
+    var list=$("#sessList");var items=Object.values(getSessions()).sort(function(a,b){return (b.updated||b.when)-(a.updated||a.when);});
+    if(!items.length){list.innerHTML='<div class="emptylist">لا توجد جلسات محفوظة بعد.</div>';return;}
+    list.innerHTML="";
+    items.forEach(function(it){
+      var row=document.createElement("div");row.className="sess";
+      var cur=it.id===curId?" · الحالية":"";
+      row.innerHTML='<div class="info"><div class="t"></div><div class="d"></div></div><button class="open">فتح</button><button class="cp">نسخ</button><button class="del">حذف</button>';
+      row.querySelector(".t").textContent="اجتماع "+fmtDate(it.when)+cur;
+      row.querySelector(".d").textContent=it.lines.length+" جملة";
+      row.querySelector(".open").onclick=function(){if(state.running)stopAll();state.current=it.lines.slice();curId=it.id;save("curId",curId);showSession(it);closeAll();};
+      var cp=row.querySelector(".cp");cp.onclick=function(){copyText(sessionText(it),cp,"نسخ");};
+      var del=row.querySelector(".del");del.onclick=function(){
+        if(del.dataset.confirm!=="1"){del.dataset.confirm="1";del.textContent="تأكيد الحذف";return;}
+        var all=getSessions();delete all[it.id];setSessions(all);
+        if(it.id===curId){if(state.running)stopAll();curId=null;save("curId","");state.current=[];clearFeed();}
+        renderSessions();};
+      list.appendChild(row);
+    });
+  }
+  $("#newSessionRow").onclick=function(){if(state.running)stopAll();curId=null;save("curId","");state.current=[];clearFeed();closeAll();
+    statusMain.textContent="جلسة جديدة";statusSub.textContent="اضغط المايك للبدء";};
+
+  /* ---------- wake lock (keep screen on during meetings) ---------- */
+  var wake=null;
+  function requestWake(){try{if("wakeLock" in navigator)navigator.wakeLock.request("screen").then(function(w){wake=w;}).catch(function(){});}catch(e){}}
+  function releaseWake(){try{if(wake)wake.release();}catch(e){}wake=null;}
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&state.running)requestWake();});
+
+  /* ---------- status ---------- */
+  function setDot(){dot.className="dot"+(state.running?(state.hidden?" rec":" live"):"");}
+  function setRunning(on,keepStatus){
+    state.running=on;micBtn.classList.toggle("on",on);micBtn.textContent=on?"■":"🎙";
+    micBtn.setAttribute("aria-label",on?"إيقاف":"بدء الاستماع");setDot();
+    if(keepStatus)return;
+    statusMain.textContent=on?"يستمع…":"متوقف";
+    statusSub.textContent=on?modeLabel():(state.current.length?"اضغط للمتابعة على نفس الجلسة":"اضغط للبدء");
+  }
+
+  /* ---------- mic permission (browser) ---------- */
+  function ensureMic(){
+    if(NATIVE)return Promise.resolve(true);
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+      fail(IN_FRAME?MSG_FRAME:"هذا المتصفح لا يسمح بالميكروفون هنا. افتح الملف في Chrome أو Edge.");return Promise.resolve(false);}
+    return navigator.mediaDevices.getUserMedia({audio:true}).then(function(s){s.getTracks().forEach(function(t){t.stop();});return true;})
+      .catch(function(e){var n=e&&e.name;
+        if(IN_FRAME)fail(MSG_FRAME);
+        else if(n==="NotAllowedError"||n==="SecurityError")fail("الميكروفون مرفوض. اضغط أيقونة القفل 🔒 بجانب العنوان ← الميكروفون ← سماح، ثم أعد تحميل الصفحة.");
+        else if(n==="NotFoundError")fail("لا يوجد ميكروفون متصل بالجهاز.");
+        else if(n==="NotReadableError")fail("الميكروفون مستخدم من برنامج آخر. أغلقه وحاول مرة ثانية.");
+        else fail("تعذّر تشغيل الميكروفون ("+(n||"خطأ")+").");
+        return false;});
+  }
+
+  /* ---------- ENGINE: browser speech (free) ---------- */
+  var recog=null;
+  function startBrowserSR(){
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){fail("هذا المتصفح لا يدعم التعرّف على الكلام. استخدم Chrome أو Edge، أو فعّل Azure.");return false;}
+    recog=new SR();recog.lang="zh-CN";recog.continuous=true;recog.interimResults=true;recog.maxAlternatives=1;
+    recog.onresult=function(e){var heard=false;
+      for(var i=e.resultIndex;i<e.results.length;i++){var r=e.results[i];
+        if(r.isFinal){var zh=(r[0].transcript||"").trim();if(zh)enqueue(zh);}else heard=true;}
+      if(heard)showLive("…","");};
+    recog.onerror=function(ev){var er=ev.error;
+      if(er==="not-allowed"||er==="service-not-allowed"){stopAll(true);fail(IN_FRAME?MSG_FRAME:"الميكروفون أو خدمة التعرّف مرفوضة. اسمح بالميكروفون من أيقونة القفل 🔒 ثم أعد المحاولة.");}
+      else if(er==="audio-capture"){stopAll(true);fail("لا يوجد ميكروفون أو أنه مستخدم من برنامج آخر.");}
+      else if(er==="language-not-supported"){stopAll(true);fail("الصينية غير مدعومة في هذا المتصفح. استخدم Chrome أو Azure.");}
+      else if(er==="network"){softWarn("مشكلة اتصال — يعيد المحاولة…");}};
+    recog.onend=function(){if(state.running&&recog){setTimeout(function(){if(state.running&&recog){try{recog.start();}catch(e){}}},250);}};
+    try{recog.start();}catch(e){fail("تعذّر بدء الاستماع.");recog=null;return false;}
+    return true;
+  }
+  function stopBrowserSR(){if(recog){var r=recog;recog=null;r.onend=null;try{r.abort();}catch(e){}}}
+
+  /* ---------- ENGINE: Android native speech (free, inside the APK) ---------- */
+  window.__nativeSpeech=function(type,text){
+    if(!state.running)return;
+    if(type==="partial"){showLive("…","");}
+    else if(type==="final"){if(text&&text.trim())enqueue(text.trim());else clearLive();}
+    else if(type==="error"){
+      if(text==="not-allowed"){stopAll(true);fail("اسمح للتطبيق باستخدام الميكروفون: إعدادات الجوال ← التطبيقات ← مترجم الاجتماعات ← الأذونات.");}
+      else if(text==="unavailable"){stopAll(true);fail("خدمة التعرّف على الكلام غير متوفرة. ثبّت أو حدّث تطبيق Google، أو استخدم وضع Azure.");}
+      else if(text==="network"){softWarn("مشكلة اتصال — يعيد المحاولة…");}
+    }
+  };
+  function startNative(){try{window.AndroidSpeech.start("zh-CN");return true;}catch(e){fail("تعذّر تشغيل محرك الكلام في الجوال.");return false;}}
+  function stopNative(){if(NATIVE){try{window.AndroidSpeech.stop();}catch(e){}}}
+
+  /* ---------- ENGINE: Azure ---------- */
+  var azRec=null,azStream=null,azDisplay=null;
+  function loadSDK(){return new Promise(function(res,rej){if(window.SpeechSDK)return res();
+    var s=document.createElement("script");s.src=SDK_URL;s.onload=function(){window.SpeechSDK?res():rej();};s.onerror=rej;document.head.appendChild(s);});}
+  function startAzure(){
+    if(!state.azKey||!state.azRegion){fail("أضف مفتاح Azure والمنطقة من الإعدادات المتقدمة.");openSheet($("#advSheet"));return Promise.resolve(false);}
+    var SDK;
+    return loadSDK().then(function(){SDK=window.SpeechSDK;return getAzureStream();},function(){fail("تعذّر تحميل مكتبة Azure. تحقق من الإنترنت.");return null;})
+    .then(function(stream){
+      if(!stream)return false;
+      azStream=stream;
+      var cfg=SDK.SpeechTranslationConfig.fromSubscription(state.azKey,state.azRegion);
+      cfg.speechRecognitionLanguage="zh-CN";cfg.addTargetLanguage("ar");cfg.addTargetLanguage("en");
+      azRec=new SDK.TranslationRecognizer(cfg,SDK.AudioConfig.fromStreamInput(azStream));
+      azRec.recognizing=function(s,ev){var t=ev.result.translations;showLive(t.get("ar")||"…",t.get("en")||"");};
+      azRec.recognized=function(s,ev){if(ev.result.reason===SDK.ResultReason.TranslatedSpeech){var t=ev.result.translations;
+        var ar=t.get("ar")||"",en=t.get("en")||"";if(ar||en)addFinal(ev.result.text||"",ar,en);else clearLive();}};
+      azRec.canceled=function(s,ev){if(ev.reason===SDK.CancellationReason.Error){stopAll(true);
+        fail("Azure: "+(ev.errorDetails||"خطأ")+" — تحقق من المفتاح والمنطقة والإنترنت.");}};
+      return new Promise(function(res){azRec.startContinuousRecognitionAsync(function(){res(true);},function(err){fail("تعذّر تشغيل Azure: "+err);res(false);});});
+    });
+  }
+  function getAzureStream(){
+    if(state.src==="system"){
+      if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){fail(IN_FRAME?MSG_FRAME:"التقاط صوت النظام يحتاج Chrome أو Edge على اللابتوب.");return Promise.resolve(null);}
+      return navigator.mediaDevices.getDisplayMedia({video:true,audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},systemAudio:"include"})
+        .then(function(d){var at=d.getAudioTracks();
+          if(!at.length){d.getTracks().forEach(function(t){t.stop();});
+            fail("لم تتم مشاركة الصوت. أعد المحاولة: ويندوز ← «الشاشة بالكامل» + «مشاركة صوت النظام». ماك ← اختر تبويب الاجتماع + «مشاركة صوت التبويب».");return null;}
+          azDisplay=d;at[0].addEventListener("ended",function(){if(state.running){stopAll(true);fail("توقفت مشاركة الصوت.");}});
+          return new MediaStream(at);})
+        .catch(function(e){fail(IN_FRAME?MSG_FRAME:"تم إلغاء المشاركة أو رفضها.");return null;});
+    }
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){fail(IN_FRAME?MSG_FRAME:"هذا المتصفح لا يسمح بالميكروفون.");return Promise.resolve(null);}
+    return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})
+      .catch(function(e){fail(IN_FRAME?MSG_FRAME:(e&&e.name==="NotAllowedError"?"الميكروفون مرفوض. اسمح به من أيقونة القفل 🔒 ثم أعد المحاولة.":"تعذّر الوصول للميكروفون."));return null;});
+  }
+  function stopAzure(){
+    if(azRec){var r=azRec;azRec=null;try{r.stopContinuousRecognitionAsync(function(){try{r.close();}catch(e){}},function(){try{r.close();}catch(e){}});}catch(e){}}
+    if(azStream){azStream.getTracks().forEach(function(t){t.stop();});azStream=null;}
+    if(azDisplay){azDisplay.getTracks().forEach(function(t){t.stop();});azDisplay=null;}
+  }
+
+  /* ---------- start / stop ---------- */
+  function stopEngines(){stopBrowserSR();stopNative();stopAzure();}
+  function stopAll(keepStatus){stopEngines();clearLive();releaseWake();setRunning(false,keepStatus);}
+  function start(){
+    if(state.starting)return;
+    persist();state.starting=true;micBtn.disabled=true;statusMain.textContent="يجهّز…";statusSub.textContent="";
+    var p;
+    if(state.mode==="azure")p=startAzure();
+    else p=ensureMic().then(function(ok){return ok?(NATIVE?startNative():startBrowserSR()):false;});
+    p.then(function(ok){return ok;},function(e){fail("خطأ غير متوقع: "+((e&&e.message)||e));return false;})
+     .then(function(ok){
+       state.starting=false;micBtn.disabled=false;
+       if(ok){hideBanner();setRunning(true);requestWake();}
+       else{stopEngines();setRunning(false,true);}
+     });
+  }
+  micBtn.onclick=function(){if(state.starting)return;if(state.running)stopAll();else start();};
+
+  /* ---------- summary ---------- */
+  $("#openSummary").onclick=function(){$("#sumOut").style.display="none";$("#copySumBtn").style.display="none";
+    $("#sumHint").textContent=state.current.length?("الجلسة الحالية: "+state.current.length+" جملة. يلخّص بلغة العرض المختارة."):"لا يوجد نقاش في الجلسة الحالية. افتح جلسة من «الجلسات المحفوظة» لتلخيصها.";
+    openSheet($("#sumSheet"));};
+  $("#genSumBtn").onclick=function(){
+    persist();
+    if(!state.gemKey){$("#sumHint").textContent="أضف مفتاح Gemini من الإعدادات المتقدمة أولاً.";openSheet($("#advSheet"));return;}
+    if(!state.current.length){$("#sumHint").textContent="لا يوجد نقاش لتلخيصه.";return;}
+    var btn=$("#genSumBtn");btn.textContent="جاري الإنشاء…";btn.disabled=true;
+    var lang=state.lang==="en"?"English":"Arabic";
+    var text=state.current.map(function(l){return "["+l.ts+"] ZH: "+(l.zh||"-")+" | AR: "+(l.ar||"-")+" | EN: "+(l.en||"-");}).join("\n");
+    var prompt="You are summarizing a business meeting spoken in Mandarin Chinese. Each line has the original Chinese (from speech recognition, may contain errors) "+
+      "and machine translations. When they conflict, rely on the Chinese meaning.\nWrite the summary in "+lang+" with these sections:\n"+
+      "1) Main topics\n2) Decisions made\n3) Action items / next steps (who and what, if stated)\n4) Concerns, disagreements or internal remarks raised by the participants\n"+
+      "Use short bullet points. Do not invent anything not in the transcript.\n\nTranscript:\n"+text;
+    gemini(prompt,false).then(function(out){$("#sumOut").textContent=out;$("#sumOut").style.display="";$("#copySumBtn").style.display="";})
+      .catch(function(e){$("#sumOut").textContent="تعذّر إنشاء الملخص: "+(e.message||"خطأ")+"\nتحقق من المفتاح، وإذا ظهر خطأ نموذج غيّر النموذج إلى gemini-2.5-flash من الإعدادات المتقدمة.";$("#sumOut").style.display="";})
+      .then(function(){btn.textContent="إنشاء الملخص";btn.disabled=false;});
+  };
+  var copySumBtn=$("#copySumBtn");
+  copySumBtn.onclick=function(){copyText($("#sumOut").textContent,copySumBtn,"نسخ الملخص");};
+
+  if(state.current.length){statusSub.textContent="اضغط للمتابعة على نفس الجلسة";}
+})();
+</script>
+</body>
+</html>
