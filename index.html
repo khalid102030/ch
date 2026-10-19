@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10161c">
 <title>مترجم الاجتماعات</title>
 <style>
   :root{
@@ -93,6 +94,12 @@
   .modebar{display:flex;gap:8px;margin:8px 0 6px}
   .modebar button{flex:1;appearance:none;border:1px solid var(--line);background:var(--bg);color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:11px;border-radius:10px;cursor:pointer}
   .modebar button[aria-pressed="true"]{border-color:var(--jade);background:color-mix(in srgb,var(--jade) 14%,transparent);color:var(--ink)}
+  .selsm{background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:9px 10px;font:inherit;font-size:13px;font-weight:600;max-width:150px}
+  .namein,.searchin{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;margin-top:8px}
+  .namein:focus,.searchin:focus{outline:2px solid var(--focus);outline-offset:-1px}
+  .searchin{margin:0 0 12px}
+  .sess .rename{display:flex;gap:6px;width:100%;margin-top:4px}
+  .sess .rename input{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:7px 10px;font:inherit;font-size:13px}
   .toggle{position:relative;width:48px;height:28px;border-radius:999px;background:var(--line);border:0;cursor:pointer;flex:0 0 auto;transition:background .2s}
   .toggle::after{content:"";position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
   .toggle[aria-pressed="true"]{background:var(--jade)}
@@ -104,12 +111,46 @@
   .divider{height:1px;background:var(--line);margin:18px 0}
   .sub{font-size:13px;font-weight:700;color:var(--muted);margin:4px 0 2px}
   .sess{border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:10px;background:var(--bg);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .sess .info{flex:1;min-width:150px}.sess .t{font-size:14px;font-weight:600}.sess .d{font-size:12px;color:var(--muted);margin-top:2px}
+  .sess .info{flex:1 1 100%;min-width:0}
+  .sess>button{flex:1 1 0}
+  .sess .t{line-height:1.5}.sess .d{line-height:1.6}.sess .t{font-size:14px;font-weight:600}.sess .d{font-size:12px;color:var(--muted);margin-top:2px}
   .sess button{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:12px;font-weight:600;padding:7px 11px;border-radius:9px;cursor:pointer}
   .sess button.del{color:var(--rose);border-color:color-mix(in srgb,var(--rose) 40%,transparent)}
   .sumbox{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:15px;font-size:14px;line-height:1.8;white-space:pre-wrap;margin-top:12px;max-height:320px;overflow-y:auto}
   .emptylist{color:var(--muted2);font-size:13px;text-align:center;padding:20px}
   .backbtn{appearance:none;border:0;background:transparent;color:var(--jade);font:inherit;font-size:14px;font-weight:600;cursor:pointer;padding:0;margin-bottom:12px}
+  .chev{color:var(--muted)}
+  /* record button styles (chosen in settings) */
+  .mic{animation:none!important}
+  .mic .ic{display:grid;place-items:center;line-height:0}
+  .mic .lbl{display:none}
+  body[data-mic] .status .m{font-size:13px;font-weight:600;color:var(--muted)}
+  body[data-mic] .status .s{display:block;font-size:11.5px;color:var(--muted2)}
+  .rectime{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;direction:ltr;margin-top:2px}
+  .rectime:empty{display:none}
+  body[data-mic="a"] .mic{width:84px;height:84px;background:var(--jade);color:#fff;border:0;box-shadow:0 6px 22px color-mix(in srgb,var(--jade) 40%,transparent)}
+  body[data-mic="a"] .mic.on{background:var(--rose);box-shadow:0 0 0 7px color-mix(in srgb,var(--rose) 22%,transparent)}
+  body[data-mic="b"] .mic{width:66px;height:66px;background:var(--panel);color:var(--jade);border:2px solid var(--jade);box-shadow:none}
+  body[data-mic="b"] .mic.on{color:var(--rose);border-color:var(--rose);box-shadow:0 0 0 5px color-mix(in srgb,var(--rose) 15%,transparent)}
+  body[data-mic="c"] footer{align-items:stretch}
+  body[data-mic="c"] .mic{width:100%;height:58px;border-radius:16px;background:var(--jade);color:#fff;border:0;box-shadow:none;
+    display:flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-size:17px;font-weight:700}
+  body[data-mic="c"] .mic.on{background:var(--rose)}
+  body[data-mic="c"] .mic .lbl{display:inline;font-variant-numeric:tabular-nums}
+  body[data-mic="c"] .rectime{display:none}
+  .seg.three button{padding:9px 11px}
+  .note{display:block;color:var(--muted2);font-size:12px;line-height:1.5;margin-top:4px}
+  .firstrun{margin-top:14px!important;font-size:13px!important;color:var(--muted2)}
+  .linkbtn{appearance:none;border:0;background:transparent;color:var(--jade);font:inherit;font-weight:700;cursor:pointer;padding:6px 0;text-decoration:underline}
+  .testrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 8px}
+  .ghost.sm{width:auto;margin:0;padding:9px 14px;font-size:13px}
+  .testout{font-size:13px;font-weight:600;line-height:1.5}
+  .testout.good{color:var(--jade)}.testout.bad{color:var(--rose)}
+  .chk{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;margin:6px 0 2px;cursor:pointer}
+  .chk input{width:18px;height:18px;accent-color:var(--jade)}
+  .bakout{font-size:13.5px;line-height:1.7;margin:12px 0 0;min-height:1em}
+  .storeinfo{font-size:12px;color:var(--muted2);margin-top:14px;padding-top:12px;border-top:1px solid var(--line);line-height:1.6}
+  .ver{text-align:center;color:var(--muted2);font-size:11.5px;margin:12px 0 0}
 </style>
 </head>
 <body data-hiddenmsg="الوضع المخفي مُفعّل — التسجيل مستمر في الخلفية.">
@@ -126,14 +167,16 @@
   <div class="empty" id="empty">
     <h2>جاهز للترجمة</h2>
     <p>اضغط الميكروفون وابدأ. الترجمة فورية بدون صوت. كل التفاصيل في الإعدادات ⚙</p>
+    <p class="firstrun" id="firstRun" style="display:none">ما فيه مفاتيح للحين — الوضع المجاني شغّال. لدقة أعلى أضف مفتاح Azure أو Gemini.<br><button class="linkbtn" id="firstRunBtn">إضافة المفاتيح</button></p>
   </div>
 </main>
 
 <footer>
-  <button class="mic" id="micBtn" aria-label="بدء الاستماع">🎙</button>
+  <button class="mic" id="micBtn" aria-label="بدء الاستماع" disabled><span class="ic"></span><span class="lbl"></span></button>
   <div class="status">
-    <div class="m" id="statusMain">متوقف</div>
-    <div class="s" id="statusSub">اضغط للبدء</div>
+    <div class="m" id="statusMain">يجهّز…</div>
+    <div class="rectime" id="recTime"></div>
+    <div class="s" id="statusSub"></div>
   </div>
 </footer>
 
@@ -144,6 +187,20 @@
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="الإعدادات">
   <h3>الإعدادات</h3>
   <p class="hint" id="sessionHint">كل شي من هنا.</p>
+
+  <div class="row" style="display:block">
+    <div class="rl">اسم الاجتماع</div>
+    <div class="rd">اختياري — يسهّل تلقاه في الجلسات المحفوظة</div>
+    <input id="sessName" class="namein" type="text" maxlength="80" placeholder="مثال: الجهة الصينية — التسعير" autocomplete="off">
+  </div>
+
+  <div class="row">
+    <div><div class="rl">لغة المتحدث</div><div class="rd">اللغة اللي يتكلم بها الطرف الثاني</div></div>
+    <select id="srcLangSel" class="selsm" aria-label="لغة المتحدث">
+      <option value="zh">الصينية</option><option value="ko">الكورية</option><option value="ja">اليابانية</option>
+      <option value="hi">الهندية</option><option value="de">الألمانية</option><option value="fr">الفرنسية</option><option value="ru">الروسية</option>
+    </select>
+  </div>
 
   <div class="row">
     <div><div class="rl">لغة الترجمة</div><div class="rd">تتغير فوراً حتى للجمل السابقة</div></div>
@@ -160,13 +217,17 @@
   </div>
 
   <div class="row">
-    <div><div class="rl">زر تسجيل صغير</div><div class="rd">زر هادئ لا يلفت الانتباه</div></div>
-    <button class="toggle" id="smallToggle" aria-pressed="true" aria-label="زر تسجيل صغير"></button>
+    <div><div class="rl">شكل زر التسجيل</div><div class="rd">كبير واضح، أو هادئ، أو عريض</div></div>
+    <div class="seg three" role="group" aria-label="شكل زر التسجيل">
+      <button data-mic="a" aria-pressed="false">كبير</button>
+      <button data-mic="b" aria-pressed="true">هادئ</button>
+      <button data-mic="c" aria-pressed="false">عريض</button>
+    </div>
   </div>
 
   <div class="row nav" id="blackoutRow">
     <div><div class="rl">شاشة سوداء ⬛</div><div class="rd">تبدو الشاشة مطفأة والتسجيل مستمر — اضغط مرتين للخروج</div></div>
-    <span style="color:var(--muted)">‹</span>
+    <span class="chev">‹</span>
   </div>
 
   <div class="row nav" id="newSessionRow">
@@ -175,34 +236,41 @@
   </div>
 
   <div class="row nav" id="openSessions">
-    <div><div class="rl">الجلسات المحفوظة 🗂</div><div class="rd">افتح، انسخ، أو احذف اجتماعاتك</div></div>
-    <span style="color:var(--muted)">‹</span>
+    <div><div class="rl">الجلسات المحفوظة 🗂</div><div class="rd">افتح، سمِّ، انسخ، أو احذف اجتماعاتك</div></div>
+    <span class="chev">‹</span>
   </div>
 
   <div class="row nav" id="openSummary">
     <div><div class="rl">ملخص النقاش ✦</div><div class="rd">نقاط وقرارات عبر Gemini</div></div>
-    <span style="color:var(--muted)">‹</span>
+    <span class="chev">‹</span>
   </div>
 
-  <div class="row nav" id="openAdvanced" style="border-bottom:0">
+  <div class="row nav" id="openAdvanced">
     <div><div class="rl">إعدادات متقدمة</div><div class="rd">المصدر، الدقة، المفاتيح</div></div>
-    <span style="color:var(--muted)">‹</span>
+    <span class="chev">‹</span>
+  </div>
+
+  <div class="row nav" id="openBackup" style="border-bottom:0">
+    <div><div class="rl">النسخ الاحتياطي 💾</div><div class="rd">احفظ كل اجتماعاتك في ملف وارجعها متى ما تبي</div></div>
+    <span class="chev">‹</span>
   </div>
 
   <button class="done" id="doneBtn">تم</button>
+  <p class="ver" id="verLabel"></p>
 </div>
 
 <!-- ADVANCED -->
 <div class="sheet" id="advSheet" role="dialog" aria-modal="true" aria-label="إعدادات متقدمة">
   <button class="backbtn" data-back>‹ رجوع</button>
   <h3>إعدادات متقدمة</h3>
+  <p class="hint">كل تغيير يُحفظ فوراً.</p>
 
   <div class="sub">طريقة التعرّف على الكلام</div>
   <div class="modebar" role="group" aria-label="الطريقة">
     <button data-mode="free" aria-pressed="true">مجاني</button>
     <button data-mode="azure" aria-pressed="false">Azure (دقة أعلى)</button>
   </div>
-  <small id="modeNote" style="color:var(--muted2);font-size:12px;line-height:1.5;display:block"></small>
+  <small id="modeNote" class="note"></small>
 
   <div class="field">
     <label for="srcSel">مصدر الصوت</label>
@@ -220,27 +288,40 @@
   </div>
 
   <div id="azureFields" style="display:none">
-    <div class="field"><label for="azKey">مفتاح Azure Speech</label><input id="azKey" type="password" placeholder="الصق KEY 1" autocomplete="off"><small>يُحفظ على جهازك فقط.</small></div>
-    <div class="field"><label for="azRegion">المنطقة (Region)</label><input id="azRegion" type="text" placeholder="مثال: uaenorth" autocomplete="off" dir="ltr"></div>
+    <div class="field"><label for="azKey">مفتاح Azure Speech (KEY 1)</label><input id="azKey" type="password" placeholder="الصق المفتاح" autocomplete="off" dir="ltr"></div>
+    <div class="field">
+      <label for="azRegionSel">المنطقة (Region)</label>
+      <select id="azRegionSel"></select>
+      <input id="azRegionCustom" type="text" dir="ltr" placeholder="رمز المنطقة، مثل: southafricanorth" autocomplete="off" style="display:none;margin-top:8px">
+      <small>نفس المنطقة اللي أنشأت فيها خدمة Speech في Azure.</small>
+    </div>
+    <div class="testrow"><button class="ghost sm" id="testAz">اختبار مفتاح Azure</button><span class="testout" id="testAzOut"></span></div>
+  </div>
+
+  <div class="field">
+    <label for="autoSplit">فصل الاجتماعات تلقائياً</label>
+    <select id="autoSplit">
+      <option value="30">بعد توقف ٣٠ دقيقة</option><option value="60">بعد توقف ساعة</option>
+      <option value="120">بعد توقف ساعتين</option><option value="240">بعد توقف ٤ ساعات</option>
+      <option value="0">إيقاف — أفصل يدوياً فقط</option>
+    </select>
+    <small>إذا ضغطت المايك بعد هذي المدة من آخر جملة، يبدأ اجتماع جديد تلقائياً.</small>
   </div>
 
   <div class="divider"></div>
   <div class="sub">Gemini (للملخص + ترجمة أدق في الوضع المجاني)</div>
-  <div class="field"><label for="gemKey">مفتاح Gemini</label><input id="gemKey" type="password" placeholder="الصق المفتاح" autocomplete="off"><small>مجاني من Google AI Studio بدون بطاقة.</small></div>
+  <div class="field"><label for="gemKey">مفتاح Gemini</label><input id="gemKey" type="password" placeholder="الصق المفتاح" autocomplete="off" dir="ltr"><small>مجاني من Google AI Studio بدون بطاقة.</small></div>
+  <div class="testrow"><button class="ghost sm" id="testGem">اختبار مفتاح Gemini</button><span class="testout" id="testGemOut"></span></div>
   <div class="field">
     <label for="trEngine">ترجمة الوضع المجاني</label>
-    <select id="trEngine">
-      <option value="auto">Gemini إذا وُجد المفتاح (أدق)</option>
-      <option value="mymemory">المترجم المجاني العام فقط</option>
-    </select>
-    <small>المترجم العام له حد يومي ودقته أقل. Gemini أدق بكثير للصيني.</small>
+    <select id="trEngine"><option value="auto">Gemini إذا وُجد المفتاح (أدق)</option><option value="mymemory">المترجم المجاني العام فقط</option></select>
   </div>
   <div class="field">
     <label for="gemModel">نموذج Gemini</label>
     <input id="gemModel" type="text" dir="ltr" autocomplete="off" placeholder="gemini-flash-latest">
-    <small>اتركه كما هو. إذا ظهر خطأ «model not found» جرّب: gemini-2.5-flash</small>
+    <small>اتركه كما هو. إذا قال الاختبار إن النموذج غير موجود، جرّب: gemini-2.5-flash</small>
   </div>
-  <button class="done" data-back>حفظ ورجوع</button>
+  <button class="done" data-back>رجوع</button>
 </div>
 
 <!-- SESSIONS -->
@@ -248,6 +329,7 @@
   <button class="backbtn" data-back>‹ رجوع</button>
   <h3>الجلسات المحفوظة</h3>
   <p class="hint">«فتح» يعرض الجلسة ويكمل عليها لو شغّلت المايك.</p>
+  <input id="sessSearch" class="searchin" type="search" placeholder="ابحث باسم الجهة، أو تاريخ، أو كلمة قيلت في الاجتماع" autocomplete="off">
   <div id="sessList"></div>
 </div>
 
@@ -261,51 +343,149 @@
   <button class="ghost" id="copySumBtn" style="display:none">نسخ الملخص</button>
 </div>
 
+<!-- BACKUP -->
+<div class="sheet" id="bakSheet" role="dialog" aria-modal="true" aria-label="النسخ الاحتياطي">
+  <button class="backbtn" data-back>‹ رجوع</button>
+  <h3>النسخ الاحتياطي</h3>
+  <p class="hint">خذ نسخة من كل اجتماعاتك وإعداداتك في ملف، وترجعها لو غيّرت الجوال أو حذفت التطبيق. يُنصح بنسخة كل أسبوع.</p>
+  <label class="chk"><input type="checkbox" id="bakKeys"> تضمين مفاتيحي في الملف</label>
+  <small class="note">لو فيه مفاتيحك، لا ترسل الملف لأحد.</small>
+  <button class="done" id="bakExport">تصدير نسخة احتياطية</button>
+  <button class="ghost" id="bakImportBtn">استيراد نسخة احتياطية</button>
+  <input type="file" id="bakFile" accept=".json,application/json" hidden>
+  <p class="bakout" id="bakOut"></p>
+  <div class="storeinfo" id="storeInfo"></div>
+</div>
+
 <script>
 (function(){
   "use strict";
+  var APP_VERSION="3.1";
   var $=function(s){return document.querySelector(s);};
+  function load(k,d){try{var v=localStorage.getItem("mt_"+k);return v===null?d:v;}catch(e){return d;}}
+  function save(k,v){try{localStorage.setItem("mt_"+k,v);return true;}catch(e){return false;}}
+  function drop(k){try{localStorage.removeItem("mt_"+k);}catch(e){}}
+  function pad(n){return (n<10?"0":"")+n;}
+
   var feed=$("#feed"),empty=$("#empty"),micBtn=$("#micBtn"),dot=$("#dot"),banner=$("#banner");
   var statusMain=$("#statusMain"),statusSub=$("#statusSub");
 
-  function load(k,d){try{var v=localStorage.getItem("mt_"+k);return v===null?d:v;}catch(e){return d;}}
-  function save(k,v){try{localStorage.setItem("mt_"+k,v);}catch(e){}}
-
   var NATIVE=typeof window.AndroidSpeech!=="undefined";
   var IN_FRAME=(function(){try{return window.self!==window.top;}catch(e){return true;}})();
-  var MSG_FRAME="المعاينة داخل Claude لا تسمح بالميكروفون، لذلك لا يظهر طلب الإذن. نزّل الملف وافتحه في Chrome مباشرة، أو افتحه من رابط GitHub Pages (الشرح في التعليمات).";
+  var MSG_FRAME="المعاينة داخل Claude لا تسمح بالميكروفون، لذلك لا يظهر طلب الإذن. نزّل الملف وافتحه في Chrome مباشرة، أو افتحه من رابط GitHub Pages.";
   var SDK_URL="https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@1.40.0/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js";
+
+  var LANGS={
+    zh:{code:"zh-CN",mm:"zh-CN",name:"Mandarin Chinese",ar:"الصينية"},
+    ko:{code:"ko-KR",mm:"ko-KR",name:"Korean",ar:"الكورية"},
+    ja:{code:"ja-JP",mm:"ja-JP",name:"Japanese",ar:"اليابانية"},
+    hi:{code:"hi-IN",mm:"hi-IN",name:"Hindi",ar:"الهندية"},
+    de:{code:"de-DE",mm:"de-DE",name:"German",ar:"الألمانية"},
+    fr:{code:"fr-FR",mm:"fr-FR",name:"French",ar:"الفرنسية"},
+    ru:{code:"ru-RU",mm:"ru-RU",name:"Russian",ar:"الروسية"}
+  };
+  var REGIONS=[
+    ["qatarcentral","قطر الوسطى — Qatar Central"],["uaenorth","الإمارات الشمالية — UAE North"],
+    ["westeurope","غرب أوروبا — West Europe"],["northeurope","شمال أوروبا — North Europe"],
+    ["swedencentral","السويد — Sweden Central"],["francecentral","فرنسا — France Central"],
+    ["germanywestcentral","ألمانيا — Germany West Central"],["uksouth","بريطانيا — UK South"],
+    ["eastus","شرق أمريكا — East US"],["eastus2","شرق أمريكا 2 — East US 2"],["westus2","غرب أمريكا 2 — West US 2"],
+    ["centralindia","الهند — Central India"],["southeastasia","جنوب شرق آسيا — Southeast Asia"],
+    ["japaneast","اليابان — Japan East"],["koreacentral","كوريا — Korea Central"]
+  ];
+  var SETTING_KEYS=["lang","mode","src","azRegion","gemModel","trEngine","autoSplit","srcLang","micStyle"];
 
   var state={
     lang:load("lang","both"),mode:load("mode","free"),src:load("src","mic"),
     azKey:load("azKey",""),azRegion:load("azRegion",""),
     gemKey:load("gemKey",""),gemModel:load("gemModel","gemini-flash-latest"),trEngine:load("trEngine","auto"),
-    running:false,starting:false,hidden:false,current:[]
+    autoSplit:load("autoSplit","120"),srcLang:"zh",
+    running:false,starting:false,hidden:false,ready:false,
+    current:[],curId:load("curId","")||null,sessName:"",resumeOpened:false
   };
-  var curId=load("curId","")||null;
+  state.srcLang=LANGS[load("srcLang","zh")]?load("srcLang","zh"):"zh";
+  function L(lg){return LANGS[lg||state.srcLang]||LANGS.zh;}
 
-  /* ---------- banner / status ---------- */
+  /* ================= banner / status ================= */
   function showBanner(t){banner.textContent=t;banner.style.display="";}
   function hideBanner(){banner.style.display="none";}
   function fail(m){statusMain.textContent="تنبيه";statusSub.textContent="";showBanner(m);}
   var warnTimer=null;
   function softWarn(m){if(!state.running)return;statusSub.textContent=m;clearTimeout(warnTimer);
     warnTimer=setTimeout(function(){if(state.running)statusSub.textContent=modeLabel();},6000);}
-  function modeLabel(){return (state.mode==="azure"?"Azure":"مجاني")+" · "+(state.src==="system"&&state.mode==="azure"?"صوت النظام":"ميكروفون");}
-
+  function modeLabel(){return L().ar+" · "+(state.mode==="azure"?"Azure":"مجاني")+" · "+(state.src==="system"&&state.mode==="azure"?"صوت النظام":"ميكروفون");}
   if(IN_FRAME&&!NATIVE)showBanner(MSG_FRAME);
 
-  /* ---------- sheets ---------- */
+  /* ================= storage =================
+     Sessions live in IndexedDB (large, durable). The open meeting is ALSO mirrored
+     synchronously to localStorage after every sentence ("snapshot"), so nothing is
+     lost if the app is killed before IndexedDB finishes writing. */
+  var Store=(function(){
+    var DBN="meeting-translator",ST="sessions",db=null,cache={},useLS=false,timers={};
+    function openDB(){return new Promise(function(res){
+      if(!window.indexedDB){useLS=true;return res();}
+      var rq;try{rq=indexedDB.open(DBN,1);}catch(e){useLS=true;return res();}
+      rq.onupgradeneeded=function(){var d=rq.result;if(!d.objectStoreNames.contains(ST))d.createObjectStore(ST,{keyPath:"id"});};
+      rq.onsuccess=function(){db=rq.result;res();};
+      rq.onerror=function(){useLS=true;res();};
+      rq.onblocked=function(){useLS=true;res();};
+    });}
+    function idbAll(){return new Promise(function(res){try{var r=db.transaction(ST).objectStore(ST).getAll();
+      r.onsuccess=function(){res(r.result||[]);};r.onerror=function(){res([]);};}catch(e){res([]);}});}
+    function idbPut(s){return new Promise(function(res){try{var tx=db.transaction(ST,"readwrite");tx.objectStore(ST).put(JSON.parse(JSON.stringify(s)));
+      tx.oncomplete=function(){res(true);};tx.onerror=tx.onabort=function(){res(false);};}catch(e){res(false);}});}
+    function idbDel(id){return new Promise(function(res){try{var tx=db.transaction(ST,"readwrite");tx.objectStore(ST).delete(id);
+      tx.oncomplete=function(){res(true);};tx.onerror=tx.onabort=function(){res(false);};}catch(e){res(false);}});}
+    function lsAll(){try{return JSON.parse(localStorage.getItem("mt_sessions")||"{}")||{};}catch(e){return {};}}
+    function lsWrite(){try{localStorage.setItem("mt_sessions",JSON.stringify(cache));return true;}catch(e){return false;}}
+    function normalize(s){(s.lines||[]).forEach(function(l){if(l.zh!==undefined&&l.src===undefined){l.src=l.zh;delete l.zh;}if(!l.lang)l.lang="zh";});return s;}
+    return {
+      init:function(){
+        return openDB().then(function(){
+          if(useLS){var o=lsAll();Object.keys(o).forEach(function(k){if(o[k]&&o[k].id)cache[k]=normalize(o[k]);});return;}
+          return idbAll().then(function(rows){
+            rows.forEach(function(s){cache[s.id]=normalize(s);});
+            // one-time migration from versions 2.x (localStorage)
+            var old=lsAll(),ids=Object.keys(old);if(!ids.length)return;
+            var jobs=ids.map(function(id){var o=old[id];if(!o||!o.id||!Array.isArray(o.lines))return null;normalize(o);
+              var c=cache[id];if(!c||(o.updated||0)>(c.updated||0)){cache[id]=o;return idbPut(o);}return null;});
+            return Promise.all(jobs).then(function(r){if(r.every(function(x){return x!==false;})){
+              try{localStorage.setItem("mt_sessions_v2_backup",localStorage.getItem("mt_sessions"));localStorage.removeItem("mt_sessions");}catch(e){}}});
+          });
+        }).then(function(){
+          try{var snap=JSON.parse(localStorage.getItem("mt_snapshot")||"null");
+            if(snap&&snap.id&&Array.isArray(snap.lines)&&(!cache[snap.id]||(snap.updated||0)>(cache[snap.id].updated||0))){
+              cache[snap.id]=normalize(snap);if(useLS)lsWrite();else idbPut(snap);}}catch(e){}
+          try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+        });
+      },
+      all:function(){return Object.keys(cache).map(function(k){return cache[k];});},
+      get:function(id){return cache[id]||null;},
+      put:function(s,urgent){cache[s.id]=s;
+        if(useLS){if(!lsWrite())fail("مساحة الحفظ ممتلئة — خذ نسخة احتياطية واحذف جلسات قديمة.");return Promise.resolve(true);}
+        clearTimeout(timers[s.id]);
+        if(urgent){delete timers[s.id];return idbPut(s);}
+        timers[s.id]=setTimeout(function(){delete timers[s.id];if(cache[s.id])idbPut(cache[s.id]);},400);
+        return Promise.resolve(true);},
+      remove:function(id){delete cache[id];clearTimeout(timers[id]);delete timers[id];
+        if(useLS){lsWrite();return Promise.resolve(true);}return idbDel(id);},
+      flush:function(){var jobs=[];Object.keys(timers).forEach(function(id){clearTimeout(timers[id]);if(cache[id]&&!useLS)jobs.push(idbPut(cache[id]));});timers={};return Promise.all(jobs);},
+      kind:function(){return useLS?"تخزين المتصفح البسيط":"قاعدة بيانات الجهاز (IndexedDB)";}
+    };
+  })();
+
+  /* ================= sheets ================= */
   var scrim=$("#scrim");
   function openSheet(el){document.querySelectorAll(".sheet").forEach(function(s){s.classList.remove("open");});scrim.classList.add("open");el.classList.add("open");}
   function closeAll(){scrim.classList.remove("open");document.querySelectorAll(".sheet").forEach(function(s){s.classList.remove("open");});}
-  scrim.onclick=function(){persist();closeAll();};
+  scrim.onclick=closeAll;
   $("#settingsBtn").onclick=function(){updateSessionHint();openSheet($("#sheet"));};
   $("#doneBtn").onclick=closeAll;
-  document.querySelectorAll("[data-back]").forEach(function(b){b.onclick=function(){persist();updateSessionHint();openSheet($("#sheet"));};});
+  document.querySelectorAll("[data-back]").forEach(function(b){b.onclick=function(){updateSessionHint();openSheet($("#sheet"));};});
   function updateSessionHint(){$("#sessionHint").textContent=state.current.length?("الجلسة الحالية: "+state.current.length+" جملة."):"لا توجد جلسة مفتوحة — تبدأ تلقائياً مع أول جملة.";}
+  $("#verLabel").textContent="مترجم الاجتماعات · الإصدار "+APP_VERSION+(NATIVE?" · أندرويد":" · ويب");
 
-  /* ---------- language ---------- */
+  /* ================= display language / hidden / small / black ================= */
   document.querySelectorAll("[data-lang]").forEach(function(b){
     b.setAttribute("aria-pressed",b.dataset.lang===state.lang);
     b.onclick=function(){state.lang=b.dataset.lang;save("lang",state.lang);
@@ -314,18 +494,33 @@
   function applyLangTo(l){l.querySelector(".ar").style.display=state.lang==="en"?"none":"";l.querySelector(".en").style.display=state.lang==="ar"?"none":"";}
   function applyLang(){feed.querySelectorAll(".line").forEach(applyLangTo);}
 
-  /* ---------- hidden ---------- */
   var hideToggle=$("#hideToggle");
-  hideToggle.onclick=function(){state.hidden=!state.hidden;hideToggle.setAttribute("aria-pressed",state.hidden);
-    document.body.classList.toggle("hidden",state.hidden);setDot();};
+  hideToggle.onclick=function(){state.hidden=!state.hidden;hideToggle.setAttribute("aria-pressed",state.hidden);document.body.classList.toggle("hidden",state.hidden);setDot();};
 
-  /* ---------- small mic ---------- */
-  var smallToggle=$("#smallToggle");
-  function applySmall(on){micBtn.classList.toggle("small",on);document.body.classList.toggle("compact",on);smallToggle.setAttribute("aria-pressed",on);}
-  applySmall(load("smallMic","1")==="1");
-  smallToggle.onclick=function(){var on=smallToggle.getAttribute("aria-pressed")!=="true";save("smallMic",on?"1":"0");applySmall(on);};
+  /* record button: three styles, drawn icons (emoji looked different on every phone) */
+  var MIC_SVG='<svg viewBox="0 0 24 24" width="S" height="S" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/></svg>';
+  var STOP_SVG='<svg viewBox="0 0 24 24" width="S" height="S" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg>';
+  var micIc=micBtn.querySelector(".ic"),micLbl=micBtn.querySelector(".lbl"),recTime=$("#recTime");
+  var micStyle=load("micStyle",null);
+  if(!/^[abc]$/.test(micStyle||""))micStyle=(load("smallMic","1")==="0")?"a":"b"; // older versions: small→quiet, big→large
+  var runStart=0,runTimer=null;
+  function fmtRun(){var s=Math.floor((Date.now()-runStart)/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60);s=s%60;
+    return (h?h+":"+pad(m):m)+":"+pad(s);}
+  function renderMic(){
+    var size=micStyle==="a"?"30":(micStyle==="b"?"26":"22");
+    micIc.innerHTML=(state.running?STOP_SVG:MIC_SVG).replace(/"S"/g,'"'+size+'"');
+    micLbl.textContent=state.starting?"يجهّز…":(state.running?"إيقاف · "+fmtRun():"ابدأ التسجيل");
+    recTime.textContent=state.running?fmtRun():"";
+  }
+  function setMicStyle(v){micStyle=v;save("micStyle",v);document.body.dataset.mic=v;
+    document.querySelectorAll("[data-mic]").forEach(function(x){if(x.tagName==="BUTTON")x.setAttribute("aria-pressed",x.dataset.mic===v);});renderMic();}
+  document.querySelectorAll("button[data-mic]").forEach(function(b){b.onclick=function(){setMicStyle(b.dataset.mic);};});
+  setMicStyle(micStyle);
 
-  /* ---------- black screen ---------- */
+  var srcLangSel=$("#srcLangSel");srcLangSel.value=state.srcLang;
+  srcLangSel.onchange=function(){var was=state.running;if(was)stopAll();state.srcLang=srcLangSel.value;save("srcLang",state.srcLang);
+    setRunning(false);if(was){statusMain.textContent="تغيّرت اللغة إلى "+L().ar;statusSub.textContent="اضغط المايك للمتابعة";}};
+
   var blackout=$("#blackout");
   function nativeDim(on){if(NATIVE&&window.AndroidSpeech.dim){try{window.AndroidSpeech.dim(on);}catch(e){}}}
   function blackOn(){closeAll();blackout.hidden=false;nativeDim(true);requestWake();}
@@ -335,86 +530,160 @@
   blackout.addEventListener("touchend",function(e){e.preventDefault();var n=Date.now();if(n-lastTap<400){lastTap=0;blackOff();}else lastTap=n;});
   blackout.addEventListener("dblclick",blackOff);
 
-  /* ---------- advanced ---------- */
+  /* ================= advanced settings (saved on every change) ================= */
   var azureFields=$("#azureFields"),modeNote=$("#modeNote"),srcSel=$("#srcSel"),srcNote=$("#srcNote"),sysWarn=$("#sysWarn");
+  var azRegionSel=$("#azRegionSel"),azRegionCustom=$("#azRegionCustom");
+  (function(){var o=document.createElement("option");o.value="";o.textContent="اختر المنطقة…";azRegionSel.appendChild(o);
+    REGIONS.forEach(function(r){var x=document.createElement("option");x.value=r[0];x.textContent=r[1];azRegionSel.appendChild(x);});
+    var c=document.createElement("option");c.value="__custom";c.textContent="منطقة أخرى (أكتبها)…";azRegionSel.appendChild(c);})();
+  function showRegion(){var r=state.azRegion;
+    if(!r){azRegionSel.value="";azRegionCustom.style.display="none";}
+    else if(REGIONS.some(function(x){return x[0]===r;})){azRegionSel.value=r;azRegionCustom.style.display="none";}
+    else{azRegionSel.value="__custom";azRegionCustom.style.display="";azRegionCustom.value=r;}}
+
   document.querySelectorAll("[data-mode]").forEach(function(b){
-    b.setAttribute("aria-pressed",b.dataset.mode===state.mode);
-    b.onclick=function(){if(state.running)stopAll();state.mode=b.dataset.mode;
-      document.querySelectorAll("[data-mode]").forEach(function(x){x.setAttribute("aria-pressed",x===b);});reflectMode();};
+    b.onclick=function(){if(state.running)stopAll();state.mode=b.dataset.mode;persist();reflectMode();};
   });
   function reflectMode(){
+    document.querySelectorAll("[data-mode]").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.mode===state.mode);});
     var az=state.mode==="azure";
     azureFields.style.display=az?"":"none";
-    modeNote.textContent=az?"دقة عالية للصيني ومقاومة للضوضاء والصوت الضعيف. يدعم صوت النظام على اللابتوب. يتطلب مفتاح Azure."
+    modeNote.textContent=az?"دقة عالية ومقاومة للضوضاء والصوت الضعيف. يدعم صوت النظام على اللابتوب. يتطلب مفتاح Azure."
       :(NATIVE?"مجاني عبر محرك الكلام في الجوال (Google). ميكروفون فقط.":"مجاني عبر Chrome / Edge. ميكروفون فقط.");
     var sysAllowed=az&&!NATIVE;
     srcSel.querySelector('[value="system"]').disabled=!sysAllowed;
-    if(!sysAllowed&&state.src==="system"){state.src="mic";}
+    if(!sysAllowed&&state.src==="system"){state.src="mic";save("src","mic");}
     srcSel.value=state.src;reflectSrc();
   }
-  srcSel.onchange=function(){if(state.running)stopAll();state.src=srcSel.value;reflectSrc();};
+  srcSel.onchange=function(){if(state.running)stopAll();state.src=srcSel.value;persist();reflectSrc();};
   function reflectSrc(){var sys=state.src==="system";
     srcNote.textContent=sys?"يلتقط صوت الاجتماع رقمياً من داخل اللابتوب — الأفضل للصوت الضعيف.":"للحضوري أو للصوت الخارج من سبيكر الغرفة.";
     sysWarn.style.display=sys?"":"none";}
-  $("#azKey").value=state.azKey;$("#azRegion").value=state.azRegion;$("#gemKey").value=state.gemKey;
-  $("#gemModel").value=state.gemModel;$("#trEngine").value=state.trEngine;
+
+  $("#azKey").value=state.azKey;$("#gemKey").value=state.gemKey;$("#gemModel").value=state.gemModel;
+  $("#trEngine").value=state.trEngine;$("#autoSplit").value=state.autoSplit;showRegion();
+
   function persist(){
-    state.azKey=$("#azKey").value.trim();state.azRegion=$("#azRegion").value.trim().toLowerCase().replace(/\s+/g,"");
-    state.gemKey=$("#gemKey").value.trim();state.gemModel=$("#gemModel").value.trim()||"gemini-flash-latest";state.trEngine=$("#trEngine").value;
-    $("#azRegion").value=state.azRegion;$("#gemModel").value=state.gemModel;
+    state.azKey=$("#azKey").value.trim();state.gemKey=$("#gemKey").value.trim();
+    state.gemModel=$("#gemModel").value.trim()||"gemini-flash-latest";
+    state.trEngine=$("#trEngine").value;state.autoSplit=$("#autoSplit").value;
+    var rs=azRegionSel.value;
+    state.azRegion=rs==="__custom"?azRegionCustom.value.trim().toLowerCase().replace(/[^a-z0-9]/g,""):rs;
     save("mode",state.mode);save("src",state.src);save("azKey",state.azKey);save("azRegion",state.azRegion);
-    save("gemKey",state.gemKey);save("gemModel",state.gemModel);save("trEngine",state.trEngine);
+    save("gemKey",state.gemKey);save("gemModel",state.gemModel);save("trEngine",state.trEngine);save("autoSplit",state.autoSplit);
+    updateFirstRun();
   }
+  ["#azKey","#gemKey","#gemModel","#azRegionCustom"].forEach(function(s){$(s).addEventListener("input",persist);$(s).addEventListener("change",persist);});
+  ["#trEngine","#autoSplit"].forEach(function(s){$(s).addEventListener("change",persist);});
+  azRegionSel.addEventListener("change",function(){azRegionCustom.style.display=azRegionSel.value==="__custom"?"":"none";persist();if(azRegionSel.value==="__custom")azRegionCustom.focus();});
   reflectMode();
 
-  /* ---------- transcript ---------- */
+  /* key tests */
+  function setOut(el,txt,cls){el.textContent=txt;el.className="testout"+(cls?" "+cls:"");}
+  $("#testAz").onclick=function(){persist();var out=$("#testAzOut");
+    if(!state.azKey||!state.azRegion){setOut(out,"أدخل المفتاح واختر المنطقة أولاً","bad");return;}
+    setOut(out,"يختبر…");
+    fetch("https://"+state.azRegion+".api.cognitive.microsoft.com/sts/v1.0/issueToken",{method:"POST",headers:{"Ocp-Apim-Subscription-Key":state.azKey}})
+      .then(function(r){
+        if(r.ok)setOut(out,"✓ المفتاح والمنطقة صحيحين","good");
+        else if(r.status===401)setOut(out,"✗ المفتاح غلط، أو يتبع منطقة غير المختارة","bad");
+        else if(r.status===403)setOut(out,"✗ مرفوض — تحقق من حالة اشتراك Azure","bad");
+        else setOut(out,"✗ خطأ "+r.status,"bad");})
+      .catch(function(){setOut(out,"✗ تعذّر الاتصال — غالباً المنطقة غلط أو لا يوجد إنترنت","bad");});};
+  $("#testGem").onclick=function(){persist();var out=$("#testGemOut");
+    if(!state.gemKey){setOut(out,"أدخل مفتاح Gemini أولاً","bad");return;}
+    setOut(out,"يختبر…");
+    fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(state.gemModel)+"?key="+encodeURIComponent(state.gemKey))
+      .then(function(r){
+        if(r.ok)setOut(out,"✓ المفتاح والنموذج صحيحين","good");
+        else if(r.status===404)setOut(out,"✗ النموذج غير موجود — اكتب gemini-2.5-flash","bad");
+        else if(r.status===429)setOut(out,"✓ المفتاح صحيح، لكن وصلت الحد مؤقتاً","good");
+        else setOut(out,"✗ المفتاح غلط ("+r.status+")","bad");})
+      .catch(function(){setOut(out,"✗ تعذّر الاتصال — تحقق من الإنترنت","bad");});};
+
+  function updateFirstRun(){$("#firstRun").style.display=(!state.azKey&&!state.gemKey)?"":"none";}
+  $("#firstRunBtn").onclick=function(){openSheet($("#advSheet"));};
+
+  /* ================= transcript ================= */
   function ts(){return new Date().toLocaleTimeString("en-GB");}
   function hideEmpty(){empty.style.display="none";}
   function scrollEnd(){feed.scrollTop=feed.scrollHeight;}
+  function lineAr(l){if(l.ar)return l.ar;if(l.en)return "";if(l.pending)return "…";return "(تعذّرت ترجمة هذه الجملة)";}
   function makeLine(ar,en,time,cls){
     var el=document.createElement("div");el.className="line"+(cls?" "+cls:"");
     el.innerHTML='<div class="ar"></div><div class="en"></div><div class="ts"></div>';
     el.querySelector(".ar").textContent=ar||"";el.querySelector(".en").textContent=en||"";
     el.querySelector(".ts").textContent=time||"";applyLangTo(el);return el;
   }
-  var liveEl=null;
+  function lineEl(l){return makeLine(lineAr(l),l.en,l.ts,l.pending?"pending":"");}
+  var liveEl=null,liveAz=null;
   function showLive(ar,en){hideEmpty();
     if(!liveEl){liveEl=makeLine(ar||"…",en||"",null,"live");feed.appendChild(liveEl);}
     else{liveEl.querySelector(".ar").textContent=ar||"…";liveEl.querySelector(".en").textContent=en||"";}
     statusMain.textContent="يسمع كلام…";scrollEnd();}
-  function clearLive(){if(liveEl){liveEl.remove();liveEl=null;}if(state.running)statusMain.textContent="يستمع…";}
+  function clearLive(){if(liveEl){liveEl.remove();liveEl=null;}liveAz=null;if(state.running)statusMain.textContent="يستمع…";}
   function insertLine(el){hideEmpty();if(liveEl)feed.insertBefore(el,liveEl);else feed.appendChild(el);scrollEnd();}
-  function record(zh,ar,en,el){var t=ts();el.querySelector(".ts").textContent=t;state.current.push({zh:zh||"",ar:ar||"",en:en||"",ts:t});autosave();}
+  function clearFeed(){feed.querySelectorAll(".line").forEach(function(l){l.remove();});liveEl=null;empty.style.display="";}
+  function showSession(s){clearFeed();if(!s||!s.lines.length)return;hideEmpty();
+    var frag=document.createDocumentFragment();s.lines.forEach(function(l){frag.appendChild(lineEl(l));});feed.appendChild(frag);scrollEnd();}
 
-  // ordered queue: lines keep their spoken order even if translations return out of order
+  /* every sentence is stored the moment it is heard, translation is filled in after */
+  function saveCurrent(urgent){
+    if(!state.current.length)return;
+    if(!state.curId){state.curId="s_"+Date.now();save("curId",state.curId);}
+    var prev=Store.get(state.curId);
+    var s={id:state.curId,name:state.sessName||"",when:(prev&&prev.when)||Date.now(),updated:Date.now(),lines:state.current};
+    try{localStorage.setItem("mt_snapshot",JSON.stringify(s));}catch(e){}
+    Store.put(s,urgent);
+  }
   var queue=Promise.resolve();
-  function enqueue(zh){
-    var el=makeLine("…","",null,"pending");insertLine(el);clearLive();
-    queue=queue.then(function(){return translateBoth(zh);}).then(function(t){
-      var ar=t.ar,en=t.en;
-      if(!ar&&!en){ar="(تعذّرت ترجمة هذه الجملة)";}
-      el.classList.remove("pending");
-      el.querySelector(".ar").textContent=ar;el.querySelector(".en").textContent=en;
-      record(zh,t.ar,t.en,el);
-    }).catch(function(){el.classList.remove("pending");el.querySelector(".ar").textContent="(تعذّرت ترجمة هذه الجملة)";record(zh,"","",el);});
+  function enqueue(src){
+    var line={src:src,lang:state.srcLang,ar:"",en:"",ts:ts(),pending:true};
+    state.current.push(line);saveCurrent();var sid=state.curId;
+    var el=lineEl(line);insertLine(el);clearLive();
+    var tp=translateBoth(src,line.lang); // started now (parallel), shown in spoken order
+    queue=queue.then(function(){return tp;}).then(function(t){fill(line,el,t,sid);},function(){fill(line,el,{ar:"",en:""},sid);});
   }
-  function addFinal(zh,ar,en){clearLive();var el=makeLine(ar,en,null,"");insertLine(el);record(zh,ar,en,el);}
+  function fill(line,el,t,sid){
+    line.ar=t.ar||"";line.en=t.en||"";delete line.pending;
+    if(!line.ar&&!line.en)line.failed=true;else delete line.failed;
+    if(el){el.classList.remove("pending");el.querySelector(".ar").textContent=lineAr(line);el.querySelector(".en").textContent=line.en;}
+    if(sid===state.curId)saveCurrent();else{var s=Store.get(sid);if(s)Store.put(s);}
+  }
+  function addFinal(src,ar,en){clearLive();var line={src:src||"",lang:state.srcLang,ar:ar||"",en:en||"",ts:ts()};
+    state.current.push(line);insertLine(lineEl(line));saveCurrent();}
 
-  /* ---------- translation (free mode) ---------- */
-  function translateBoth(zh){
-    if(state.gemKey&&state.trEngine!=="mymemory"){
-      var p="Translate this Mandarin Chinese speech from a business meeting. Speech recognition may contain errors; infer the intended meaning. "+
-        'Return ONLY JSON: {"ar":"natural Arabic translation","en":"natural English translation"}\n\nText: '+zh;
-      return geminiJSON(p).then(function(o){
-        if(o&&(o.ar||o.en))return {ar:o.ar||"",en:o.en||""};
-        throw new Error("empty");
-      }).catch(function(e){softWarn("Gemini تعذّر ("+(e.message||"خطأ").slice(0,60)+") — تحويل للمترجم العام");return mmBoth(zh);});
-    }
-    return mmBoth(zh);
+  /* sentences saved without a translation (app closed, no internet) are retried */
+  var retrying={};
+  function retryLines(sid){
+    var s=Store.get(sid);if(!s||retrying[sid]||state.running)return;
+    var todo=s.lines.filter(function(l){return l.src&&(l.pending||l.failed);});
+    if(!todo.length||navigator.onLine===false)return;
+    retrying[sid]=true;var chain=Promise.resolve();
+    todo.forEach(function(l){chain=chain.then(function(){return translateBoth(l.src,l.lang).then(function(t){
+      if(t.ar||t.en){l.ar=t.ar;l.en=t.en;delete l.failed;}else l.failed=true;delete l.pending;});});});
+    chain.then(function(){delete retrying[sid];Store.put(s,true);
+      if(sid===state.curId){try{localStorage.setItem("mt_snapshot",JSON.stringify(s));}catch(e){}if(!state.running)showSession(s);}});
   }
-  function mmBoth(zh){return Promise.all([mm(zh,"ar"),mm(zh,"en")]).then(function(r){return {ar:r[0],en:r[1]};});}
-  function mm(text,to){
-    return fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(text)+"&langpair=zh-CN|"+to)
+
+  /* ================= translation (free mode) ================= */
+  var gemCoolUntil=0;
+  function translateBoth(src,lg){
+    var lang=L(lg);
+    if(state.gemKey&&state.trEngine!=="mymemory"&&Date.now()>gemCoolUntil){
+      var p="Translate this "+lang.name+" speech from a business meeting. Speech recognition may contain errors; infer the intended meaning. "+
+        'Return ONLY JSON: {"ar":"natural Arabic translation","en":"natural English translation"}\n\nText: '+src;
+      return geminiJSON(p).then(function(o){if(o&&(o.ar||o.en))return {ar:o.ar||"",en:o.en||""};throw new Error("empty");})
+        .catch(function(e){var m=(e&&e.message)||"خطأ";
+          if(/429|quota|rate|exhausted/i.test(m)){gemCoolUntil=Date.now()+60000;softWarn("وصلت حد Gemini المؤقت — المترجم العام لمدة دقيقة");}
+          else softWarn("Gemini تعذّر ("+m.slice(0,60)+") — تحويل للمترجم العام");
+          return mmBoth(src,lang);});
+    }
+    return mmBoth(src,lang);
+  }
+  function mmBoth(src,lang){return Promise.all([mm(src,lang,"ar"),mm(src,lang,"en")]).then(function(r){return {ar:r[0],en:r[1]};});}
+  function mm(text,lang,to){
+    return fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(text)+"&langpair="+lang.mm+"|"+to)
       .then(function(r){return r.json();}).then(function(j){
         var t=j&&j.responseData&&j.responseData.translatedText;
         if((j&&j.quotaFinished)||(t&&/MYMEMORY WARNING/i.test(t))){softWarn("انتهى الحد اليومي للمترجم العام — أضف مفتاح Gemini");return "";}
@@ -434,21 +703,23 @@
   }
   function geminiJSON(p){return gemini(p,true).then(function(t){return JSON.parse(t.replace(/```json|```/g,"").trim());});}
 
-  /* ---------- sessions ---------- */
-  function getSessions(){try{return JSON.parse(localStorage.getItem("mt_sessions")||"{}");}catch(e){return {};}}
-  function setSessions(s){try{localStorage.setItem("mt_sessions",JSON.stringify(s));return true;}catch(e){fail("مساحة الحفظ ممتلئة — احذف جلسات قديمة من «الجلسات المحفوظة».");return false;}}
-  function autosave(){if(!state.current.length)return;
-    if(!curId){curId="s_"+Date.now();save("curId",curId);}
-    var s=getSessions();s[curId]={id:curId,when:(s[curId]&&s[curId].when)||Date.now(),updated:Date.now(),lines:state.current};setSessions(s);}
-  function fmtDate(t){try{return new Date(t).toLocaleString("ar",{dateStyle:"medium",timeStyle:"short"});}catch(e){return new Date(t).toLocaleString();}}
-  function clearFeed(){feed.querySelectorAll(".line").forEach(function(l){l.remove();});liveEl=null;empty.style.display="";}
-  function showSession(it){clearFeed();if(!it.lines.length)return;hideEmpty();
-    it.lines.forEach(function(l){feed.appendChild(makeLine(l.ar||(l.en?"":"(تعذّرت الترجمة)"),l.en,l.ts,""));});scrollEnd();}
+  /* ================= sessions ================= */
+  function fmtDay(t){try{return new Date(t).toLocaleDateString("ar",{calendar:"gregory",weekday:"short",day:"numeric",month:"long",year:"numeric"});}catch(e){return new Date(t).toLocaleDateString();}}
+  function fmtTime(t){try{return new Date(t).toLocaleTimeString("ar",{hour:"numeric",minute:"2-digit"});}catch(e){return new Date(t).toLocaleTimeString();}}
+  function fmtDur(ms){var m=Math.max(1,Math.round(ms/60000));if(m<60)return m+" دقيقة";var hh=Math.floor(m/60),mm=m%60;return hh+" س"+(mm?" و"+mm+" د":"");}
+  function sessTitle(it){return it.name||"اجتماع بدون اسم";}
+  function sessMeta(it){var end=it.updated||it.when;return fmtDay(it.when)+" · "+fmtTime(it.when)+" – "+fmtTime(end)+" ("+fmtDur(end-it.when)+")";}
+  function sessionText(it){return sessTitle(it)+"\n"+sessMeta(it)+"\n\n"+it.lines.map(function(l){return "["+l.ts+"]\n"+(l.ar?l.ar+"\n":"")+(l.en?l.en+"\n":"");}).join("\n");}
 
-  // restore the open session after reopening the app (meeting paused / app closed)
-  (function(){if(!curId)return;var s=getSessions()[curId];if(s&&s.lines&&s.lines.length){state.current=s.lines.slice();showSession(s);}else{curId=null;save("curId","");}})();
+  var sessNameIn=$("#sessName");
+  function setSessName(n){state.sessName=n||"";sessNameIn.value=state.sessName;if(!state.curId)save("pendingName",state.sessName);}
+  sessNameIn.addEventListener("input",function(){state.sessName=sessNameIn.value.trim();
+    if(state.curId&&Store.get(state.curId)){var s=Store.get(state.curId);s.name=state.sessName;Store.put(s);
+      try{localStorage.setItem("mt_snapshot",JSON.stringify(s));}catch(e){}}
+    else save("pendingName",state.sessName);});
 
-  function sessionText(it){return it.lines.map(function(l){return "["+l.ts+"]\n"+(l.ar?l.ar+"\n":"")+(l.en?l.en+"\n":"");}).join("\n");}
+  function resetCurrent(){state.curId=null;save("curId","");state.current=[];clearFeed();setSessName("");state.resumeOpened=false;}
+
   function copyText(t,btn,label){
     function ok(){if(btn){btn.textContent="تم ✓";setTimeout(function(){btn.textContent=label;},1500);}}
     function fallback(){var ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
@@ -456,47 +727,93 @@
     if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(ok,fallback);else fallback();
   }
 
-  $("#openSessions").onclick=function(){renderSessions();openSheet($("#sessSheet"));};
+  $("#openAdvanced").onclick=function(){openSheet($("#advSheet"));};
+  var sessSearch=$("#sessSearch");
+  $("#openSessions").onclick=function(){Store.flush();sessSearch.value="";renderSessions();openSheet($("#sessSheet"));};
+  sessSearch.addEventListener("input",renderSessions);
   function renderSessions(){
-    var list=$("#sessList");var items=Object.values(getSessions()).sort(function(a,b){return (b.updated||b.when)-(a.updated||a.when);});
-    if(!items.length){list.innerHTML='<div class="emptylist">لا توجد جلسات محفوظة بعد.</div>';return;}
+    var list=$("#sessList");var all=Store.all().filter(function(s){return s.lines&&s.lines.length;})
+      .sort(function(a,b){return (b.updated||b.when)-(a.updated||a.when);});
+    if(!all.length){list.innerHTML='<div class="emptylist">لا توجد جلسات محفوظة بعد.</div>';return;}
+    var q=(sessSearch.value||"").trim().toLowerCase();
+    var items=!q?all:all.filter(function(it){
+      if(sessTitle(it).toLowerCase().indexOf(q)>-1||sessMeta(it).toLowerCase().indexOf(q)>-1)return true;
+      return it.lines.some(function(l){return ((l.ar||"")+" "+(l.en||"")).toLowerCase().indexOf(q)>-1;});});
+    if(!items.length){list.innerHTML='<div class="emptylist">ما فيه نتائج.</div>';return;}
     list.innerHTML="";
     items.forEach(function(it){
       var row=document.createElement("div");row.className="sess";
-      var cur=it.id===curId?" · الحالية":"";
-      row.innerHTML='<div class="info"><div class="t"></div><div class="d"></div></div><button class="open">فتح</button><button class="cp">نسخ</button><button class="del">حذف</button>';
-      row.querySelector(".t").textContent="اجتماع "+fmtDate(it.when)+cur;
-      row.querySelector(".d").textContent=it.lines.length+" جملة";
-      row.querySelector(".open").onclick=function(){if(state.running)stopAll();state.current=it.lines.slice();curId=it.id;save("curId",curId);showSession(it);closeAll();};
+      row.innerHTML='<div class="info"><div class="t"></div><div class="d"></div></div><button class="open">فتح</button><button class="ren">تسمية</button><button class="cp">نسخ</button><button class="del">حذف</button>';
+      row.querySelector(".t").textContent=sessTitle(it)+(it.id===state.curId?" · الحالية":"");
+      var pend=it.lines.filter(function(l){return l.pending||l.failed;}).length;
+      row.querySelector(".d").textContent=sessMeta(it)+" · "+it.lines.length+" جملة"+(pend?" · "+pend+" بدون ترجمة":"");
+      row.querySelector(".open").onclick=function(){if(state.running)stopAll();
+        state.curId=it.id;save("curId",it.id);state.current=it.lines;setSessName(it.name);state.resumeOpened=true;
+        showSession(it);closeAll();retryLines(it.id);
+        statusMain.textContent="مفتوحة: "+sessTitle(it);statusSub.textContent="اضغط المايك للمتابعة عليها";};
+      row.querySelector(".ren").onclick=function(){
+        var info=row.querySelector(".info");if(info.querySelector(".rename"))return;
+        var box=document.createElement("div");box.className="rename";box.innerHTML='<input type="text" maxlength="80"><button>حفظ</button>';
+        var inp=box.querySelector("input");inp.value=it.name||"";inp.placeholder="اسم الاجتماع";
+        function doSave(){it.name=inp.value.trim();Store.put(it,true);
+          if(it.id===state.curId){state.sessName=it.name;sessNameIn.value=it.name;try{localStorage.setItem("mt_snapshot",JSON.stringify(it));}catch(e){}}
+          renderSessions();}
+        box.querySelector("button").onclick=doSave;inp.addEventListener("keydown",function(e){if(e.key==="Enter")doSave();});
+        info.appendChild(box);inp.focus();};
       var cp=row.querySelector(".cp");cp.onclick=function(){copyText(sessionText(it),cp,"نسخ");};
       var del=row.querySelector(".del");del.onclick=function(){
         if(del.dataset.confirm!=="1"){del.dataset.confirm="1";del.textContent="تأكيد الحذف";return;}
-        var all=getSessions();delete all[it.id];setSessions(all);
-        if(it.id===curId){if(state.running)stopAll();curId=null;save("curId","");state.current=[];clearFeed();}
-        renderSessions();};
+        if(it.id===state.curId){if(state.running)stopAll();resetCurrent();}
+        try{var sn=JSON.parse(localStorage.getItem("mt_snapshot")||"null");if(sn&&sn.id===it.id)localStorage.removeItem("mt_snapshot");}catch(e){}
+        Store.remove(it.id);renderSessions();};
       list.appendChild(row);
     });
   }
-  $("#newSessionRow").onclick=function(){if(state.running)stopAll();curId=null;save("curId","");state.current=[];clearFeed();closeAll();
+  $("#newSessionRow").onclick=function(){if(state.running)stopAll();Store.flush();resetCurrent();closeAll();
     statusMain.textContent="جلسة جديدة";statusSub.textContent="اضغط المايك للبدء";};
 
-  /* ---------- wake lock (keep screen on during meetings) ---------- */
+  function maybeAutoSplit(){
+    if(state.resumeOpened){state.resumeOpened=false;return false;} // opened on purpose to continue it
+    var mins=parseInt(state.autoSplit,10)||0;
+    if(!mins||!state.curId||!state.current.length)return false;
+    var s=Store.get(state.curId);var last=s&&(s.updated||s.when);
+    if(!last||Date.now()-last<mins*60000)return false;
+    resetCurrent();return true;
+  }
+
+  /* ================= wake lock / lifecycle ================= */
   var wake=null;
   function requestWake(){try{if("wakeLock" in navigator)navigator.wakeLock.request("screen").then(function(w){wake=w;}).catch(function(){});}catch(e){}}
   function releaseWake(){try{if(wake)wake.release();}catch(e){}wake=null;}
-  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&state.running)requestWake();});
+  document.addEventListener("visibilitychange",function(){
+    if(document.visibilityState==="hidden"){Store.flush();return;}
+    if(!state.running)return;
+    requestWake();
+    if(recog){try{recog.start();}catch(e){}}
+  });
+  window.addEventListener("pagehide",function(){
+    // keep the sentence that was being heard when the app closed
+    if(state.running&&liveAz&&(liveAz.ar||liveAz.en))addFinal("",liveAz.ar,liveAz.en);
+    Store.flush();
+  });
+  window.addEventListener("offline",function(){if(state.running)statusSub.textContent="لا يوجد إنترنت — الترجمة متوقفة مؤقتاً، الجلسة محفوظة";});
+  window.addEventListener("online",function(){if(!state.running)return;statusSub.textContent=modeLabel();if(recog){try{recog.start();}catch(e){}}});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!blackout.hidden)blackOff();else closeAll();}});
 
-  /* ---------- status ---------- */
+  /* ================= status ================= */
   function setDot(){dot.className="dot"+(state.running?(state.hidden?" rec":" live"):"");}
   function setRunning(on,keepStatus){
-    state.running=on;micBtn.classList.toggle("on",on);micBtn.textContent=on?"■":"🎙";
+    var was=state.running;state.running=on;micBtn.classList.toggle("on",on);
+    if(on&&!was){runStart=Date.now();clearInterval(runTimer);runTimer=setInterval(renderMic,1000);}
+    if(!on){clearInterval(runTimer);runTimer=null;}
+    renderMic();
     micBtn.setAttribute("aria-label",on?"إيقاف":"بدء الاستماع");setDot();
     if(keepStatus)return;
     statusMain.textContent=on?"يستمع…":"متوقف";
     statusSub.textContent=on?modeLabel():(state.current.length?"اضغط للمتابعة على نفس الجلسة":"اضغط للبدء");
   }
 
-  /* ---------- mic permission (browser) ---------- */
+  /* ================= mic permission (browser) ================= */
   function ensureMic(){
     if(NATIVE)return Promise.resolve(true);
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
@@ -511,20 +828,20 @@
         return false;});
   }
 
-  /* ---------- ENGINE: browser speech (free) ---------- */
+  /* ================= ENGINE: browser speech (free) ================= */
   var recog=null;
   function startBrowserSR(){
     var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!SR){fail("هذا المتصفح لا يدعم التعرّف على الكلام. استخدم Chrome أو Edge، أو فعّل Azure.");return false;}
-    recog=new SR();recog.lang="zh-CN";recog.continuous=true;recog.interimResults=true;recog.maxAlternatives=1;
+    recog=new SR();recog.lang=L().code;recog.continuous=true;recog.interimResults=true;recog.maxAlternatives=1;
     recog.onresult=function(e){var heard=false;
       for(var i=e.resultIndex;i<e.results.length;i++){var r=e.results[i];
-        if(r.isFinal){var zh=(r[0].transcript||"").trim();if(zh)enqueue(zh);}else heard=true;}
+        if(r.isFinal){var t=(r[0].transcript||"").trim();if(t)enqueue(t);}else heard=true;}
       if(heard)showLive("…","");};
     recog.onerror=function(ev){var er=ev.error;
       if(er==="not-allowed"||er==="service-not-allowed"){stopAll(true);fail(IN_FRAME?MSG_FRAME:"الميكروفون أو خدمة التعرّف مرفوضة. اسمح بالميكروفون من أيقونة القفل 🔒 ثم أعد المحاولة.");}
       else if(er==="audio-capture"){stopAll(true);fail("لا يوجد ميكروفون أو أنه مستخدم من برنامج آخر.");}
-      else if(er==="language-not-supported"){stopAll(true);fail("الصينية غير مدعومة في هذا المتصفح. استخدم Chrome أو Azure.");}
+      else if(er==="language-not-supported"){stopAll(true);fail("اللغة "+L().ar+" غير مدعومة في هذا المتصفح. استخدم Chrome أو Azure.");}
       else if(er==="network"){softWarn("مشكلة اتصال — يعيد المحاولة…");}};
     recog.onend=function(){if(state.running&&recog){setTimeout(function(){if(state.running&&recog){try{recog.start();}catch(e){}}},250);}};
     try{recog.start();}catch(e){fail("تعذّر بدء الاستماع.");recog=null;return false;}
@@ -532,7 +849,7 @@
   }
   function stopBrowserSR(){if(recog){var r=recog;recog=null;r.onend=null;try{r.abort();}catch(e){}}}
 
-  /* ---------- ENGINE: Android native speech (free, inside the APK) ---------- */
+  /* ================= ENGINE: Android native speech ================= */
   window.__nativeSpeech=function(type,text){
     if(!state.running)return;
     if(type==="partial"){showLive("…","");}
@@ -543,31 +860,13 @@
       else if(text==="network"){softWarn("مشكلة اتصال — يعيد المحاولة…");}
     }
   };
-  function startNative(){try{window.AndroidSpeech.start("zh-CN");return true;}catch(e){fail("تعذّر تشغيل محرك الكلام في الجوال.");return false;}}
+  function startNative(){try{window.AndroidSpeech.start(L().code);return true;}catch(e){fail("تعذّر تشغيل محرك الكلام في الجوال.");return false;}}
   function stopNative(){if(NATIVE){try{window.AndroidSpeech.stop();}catch(e){}}}
 
-  /* ---------- ENGINE: Azure ---------- */
-  var azRec=null,azStream=null,azDisplay=null;
+  /* ================= ENGINE: Azure (with automatic reconnect) ================= */
+  var az={rec:null,stream:null,display:null,tries:0,stopping:false,timer:null};
   function loadSDK(){return new Promise(function(res,rej){if(window.SpeechSDK)return res();
     var s=document.createElement("script");s.src=SDK_URL;s.onload=function(){window.SpeechSDK?res():rej();};s.onerror=rej;document.head.appendChild(s);});}
-  function startAzure(){
-    if(!state.azKey||!state.azRegion){fail("أضف مفتاح Azure والمنطقة من الإعدادات المتقدمة.");openSheet($("#advSheet"));return Promise.resolve(false);}
-    var SDK;
-    return loadSDK().then(function(){SDK=window.SpeechSDK;return getAzureStream();},function(){fail("تعذّر تحميل مكتبة Azure. تحقق من الإنترنت.");return null;})
-    .then(function(stream){
-      if(!stream)return false;
-      azStream=stream;
-      var cfg=SDK.SpeechTranslationConfig.fromSubscription(state.azKey,state.azRegion);
-      cfg.speechRecognitionLanguage="zh-CN";cfg.addTargetLanguage("ar");cfg.addTargetLanguage("en");
-      azRec=new SDK.TranslationRecognizer(cfg,SDK.AudioConfig.fromStreamInput(azStream));
-      azRec.recognizing=function(s,ev){var t=ev.result.translations;showLive(t.get("ar")||"…",t.get("en")||"");};
-      azRec.recognized=function(s,ev){if(ev.result.reason===SDK.ResultReason.TranslatedSpeech){var t=ev.result.translations;
-        var ar=t.get("ar")||"",en=t.get("en")||"";if(ar||en)addFinal(ev.result.text||"",ar,en);else clearLive();}};
-      azRec.canceled=function(s,ev){if(ev.reason===SDK.CancellationReason.Error){stopAll(true);
-        fail("Azure: "+(ev.errorDetails||"خطأ")+" — تحقق من المفتاح والمنطقة والإنترنت.");}};
-      return new Promise(function(res){azRec.startContinuousRecognitionAsync(function(){res(true);},function(err){fail("تعذّر تشغيل Azure: "+err);res(false);});});
-    });
-  }
   function getAzureStream(){
     if(state.src==="system"){
       if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){fail(IN_FRAME?MSG_FRAME:"التقاط صوت النظام يحتاج Chrome أو Edge على اللابتوب.");return Promise.resolve(null);}
@@ -575,61 +874,156 @@
         .then(function(d){var at=d.getAudioTracks();
           if(!at.length){d.getTracks().forEach(function(t){t.stop();});
             fail("لم تتم مشاركة الصوت. أعد المحاولة: ويندوز ← «الشاشة بالكامل» + «مشاركة صوت النظام». ماك ← اختر تبويب الاجتماع + «مشاركة صوت التبويب».");return null;}
-          azDisplay=d;at[0].addEventListener("ended",function(){if(state.running){stopAll(true);fail("توقفت مشاركة الصوت.");}});
+          az.display=d;at[0].addEventListener("ended",function(){if(state.running){stopAll(true);fail("توقفت مشاركة الصوت. الجلسة محفوظة — اضغط المايك للمتابعة.");}});
           return new MediaStream(at);})
-        .catch(function(e){fail(IN_FRAME?MSG_FRAME:"تم إلغاء المشاركة أو رفضها.");return null;});
+        .catch(function(){fail(IN_FRAME?MSG_FRAME:"تم إلغاء المشاركة أو رفضها.");return null;});
     }
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){fail(IN_FRAME?MSG_FRAME:"هذا المتصفح لا يسمح بالميكروفون.");return Promise.resolve(null);}
     return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})
       .catch(function(e){fail(IN_FRAME?MSG_FRAME:(e&&e.name==="NotAllowedError"?"الميكروفون مرفوض. اسمح به من أيقونة القفل 🔒 ثم أعد المحاولة.":"تعذّر الوصول للميكروفون."));return null;});
   }
+  function azCreate(){
+    var SDK=window.SpeechSDK;
+    var cfg=SDK.SpeechTranslationConfig.fromSubscription(state.azKey,state.azRegion);
+    cfg.speechRecognitionLanguage=L().code;cfg.addTargetLanguage("ar");cfg.addTargetLanguage("en");
+    var rec=new SDK.TranslationRecognizer(cfg,SDK.AudioConfig.fromStreamInput(az.stream));
+    rec.recognizing=function(s,ev){if(rec!==az.rec)return;var t=ev.result.translations;
+      liveAz={ar:t.get("ar")||"",en:t.get("en")||""};showLive(liveAz.ar||"…",liveAz.en);};
+    rec.recognized=function(s,ev){if(rec!==az.rec)return;
+      if(ev.result.reason===SDK.ResultReason.TranslatedSpeech){az.tries=0;var t=ev.result.translations;
+        var ar=t.get("ar")||"",en=t.get("en")||"";if(ar||en)addFinal(ev.result.text||"",ar,en);else clearLive();}};
+    rec.canceled=function(s,ev){if(rec!==az.rec||az.stopping)return;
+      if(ev.reason!==SDK.CancellationReason.Error)return;
+      var C=SDK.CancellationErrorCode||{},code=ev.errorCode;
+      if(code===C.AuthenticationFailure||code===C.Forbidden){stopAll(true);fail("Azure رفض المفتاح. افتح ⚙ ← إعدادات متقدمة ← «اختبار مفتاح Azure».");return;}
+      if(code===C.TooManyRequests){stopAll(true);fail("Azure: تجاوزت الحد. إما خلصت الساعات المجانية هذا الشهر، أو نفس المفتاح شغّال على جهاز ثاني (الباقة المجانية تسمح بجهاز واحد بالوقت).");return;}
+      if(code===C.BadRequestParameters){stopAll(true);fail("Azure: الإعداد غير مقبول — غالباً المنطقة لا تدعم هذه اللغة. جرّب منطقة ثانية.");return;}
+      azReconnect();};
+    rec.sessionStopped=function(){if(rec===az.rec&&!az.stopping&&state.running)azReconnect();};
+    return rec;
+  }
+  function azStartRec(){return new Promise(function(res){
+    try{az.rec=azCreate();}catch(e){res(false);return;}
+    az.rec.startContinuousRecognitionAsync(function(){res(true);},function(){res(false);});});}
+  function azReconnect(){
+    if(az.timer||!state.running)return;
+    var old=az.rec;az.rec=null;
+    if(old){try{old.stopContinuousRecognitionAsync(function(){try{old.close();}catch(e){}},function(){try{old.close();}catch(e){}});}catch(e){}}
+    clearLive();
+    var offline=navigator.onLine===false;
+    if(!offline)az.tries++;
+    if(az.tries>6){stopAll(true);fail("انقطع الاتصال بـ Azure ولم يرجع. تحقق من الإنترنت ثم اضغط المايك. الجلسة محفوظة.");return;}
+    statusMain.textContent=offline?"لا يوجد إنترنت — ينتظر رجوعه…":"انقطع الاتصال — يعيد المحاولة ("+az.tries+")…";
+    az.timer=setTimeout(function(){az.timer=null;if(!state.running)return;
+      if(navigator.onLine===false){azReconnect();return;}
+      azStartRec().then(function(ok){if(!state.running)return;if(ok)statusMain.textContent="يستمع…";else azReconnect();});
+    },offline?3000:Math.min(15000,1500*az.tries));
+  }
+  function startAzure(){
+    if(!state.azKey||!state.azRegion){fail("أضف مفتاح Azure واختر المنطقة من الإعدادات المتقدمة.");openSheet($("#advSheet"));return Promise.resolve(false);}
+    return loadSDK().then(function(){return getAzureStream();},function(){fail("تعذّر تحميل مكتبة Azure. تحقق من الإنترنت.");return null;})
+      .then(function(stream){if(!stream)return false;
+        az.stream=stream;az.tries=0;az.stopping=false;
+        return azStartRec().then(function(ok){if(!ok)fail("تعذّر تشغيل Azure. تحقق من المفتاح والمنطقة والإنترنت.");return ok;});});
+  }
   function stopAzure(){
-    if(azRec){var r=azRec;azRec=null;try{r.stopContinuousRecognitionAsync(function(){try{r.close();}catch(e){}},function(){try{r.close();}catch(e){}});}catch(e){}}
-    if(azStream){azStream.getTracks().forEach(function(t){t.stop();});azStream=null;}
-    if(azDisplay){azDisplay.getTracks().forEach(function(t){t.stop();});azDisplay=null;}
+    az.stopping=true;clearTimeout(az.timer);az.timer=null;
+    if(az.rec){var r=az.rec;az.rec=null;try{r.stopContinuousRecognitionAsync(function(){try{r.close();}catch(e){}},function(){try{r.close();}catch(e){}});}catch(e){}}
+    if(az.stream){az.stream.getTracks().forEach(function(t){t.stop();});az.stream=null;}
+    if(az.display){az.display.getTracks().forEach(function(t){t.stop();});az.display=null;}
   }
 
-  /* ---------- start / stop ---------- */
+  /* ================= start / stop ================= */
   function stopEngines(){stopBrowserSR();stopNative();stopAzure();}
-  function stopAll(keepStatus){stopEngines();clearLive();releaseWake();setRunning(false,keepStatus);}
+  function stopAll(keepStatus){stopEngines();clearLive();releaseWake();Store.flush();setRunning(false,keepStatus);}
   function start(){
-    if(state.starting)return;
-    persist();state.starting=true;micBtn.disabled=true;statusMain.textContent="يجهّز…";statusSub.textContent="";
+    if(state.starting||!state.ready)return;
+    persist();var split=maybeAutoSplit();
+    state.starting=true;micBtn.disabled=true;statusMain.textContent="يجهّز…";statusSub.textContent="";renderMic();
     var p;
     if(state.mode==="azure")p=startAzure();
     else p=ensureMic().then(function(ok){return ok?(NATIVE?startNative():startBrowserSR()):false;});
     p.then(function(ok){return ok;},function(e){fail("خطأ غير متوقع: "+((e&&e.message)||e));return false;})
      .then(function(ok){
-       state.starting=false;micBtn.disabled=false;
-       if(ok){hideBanner();setRunning(true);requestWake();}
+       state.starting=false;micBtn.disabled=false;renderMic();
+       if(ok){hideBanner();setRunning(true);requestWake();
+         if(split){statusMain.textContent="اجتماع جديد — بدأت جلسة مستقلة";setTimeout(function(){if(state.running)statusMain.textContent="يستمع…";},4000);}}
        else{stopEngines();setRunning(false,true);}
      });
   }
   micBtn.onclick=function(){if(state.starting)return;if(state.running)stopAll();else start();};
 
-  /* ---------- summary ---------- */
+  /* ================= summary ================= */
   $("#openSummary").onclick=function(){$("#sumOut").style.display="none";$("#copySumBtn").style.display="none";
-    $("#sumHint").textContent=state.current.length?("الجلسة الحالية: "+state.current.length+" جملة. يلخّص بلغة العرض المختارة."):"لا يوجد نقاش في الجلسة الحالية. افتح جلسة من «الجلسات المحفوظة» لتلخيصها.";
+    $("#sumHint").textContent=state.current.length?("«"+(state.sessName||"اجتماع بدون اسم")+"» — "+state.current.length+" جملة. يلخّص بلغة العرض المختارة."):"لا يوجد نقاش في الجلسة الحالية. افتح جلسة من «الجلسات المحفوظة» لتلخيصها.";
     openSheet($("#sumSheet"));};
   $("#genSumBtn").onclick=function(){
-    persist();
     if(!state.gemKey){$("#sumHint").textContent="أضف مفتاح Gemini من الإعدادات المتقدمة أولاً.";openSheet($("#advSheet"));return;}
     if(!state.current.length){$("#sumHint").textContent="لا يوجد نقاش لتلخيصه.";return;}
     var btn=$("#genSumBtn");btn.textContent="جاري الإنشاء…";btn.disabled=true;
     var lang=state.lang==="en"?"English":"Arabic";
-    var text=state.current.map(function(l){return "["+l.ts+"] ZH: "+(l.zh||"-")+" | AR: "+(l.ar||"-")+" | EN: "+(l.en||"-");}).join("\n");
-    var prompt="You are summarizing a business meeting spoken in Mandarin Chinese. Each line has the original Chinese (from speech recognition, may contain errors) "+
-      "and machine translations. When they conflict, rely on the Chinese meaning.\nWrite the summary in "+lang+" with these sections:\n"+
+    var text=state.current.map(function(l){return "["+l.ts+"] ORIGINAL ("+L(l.lang).name+"): "+(l.src||"-")+" | AR: "+(l.ar||"-")+" | EN: "+(l.en||"-");}).join("\n");
+    var prompt="You are summarizing a business meeting. Each line has the original speech (from speech recognition, may contain errors) "+
+      "and machine translations. When they conflict, rely on the original meaning.\nWrite the summary in "+lang+" with these sections:\n"+
       "1) Main topics\n2) Decisions made\n3) Action items / next steps (who and what, if stated)\n4) Concerns, disagreements or internal remarks raised by the participants\n"+
-      "Use short bullet points. Do not invent anything not in the transcript.\n\nTranscript:\n"+text;
+      "Use short bullet points. Do not invent anything not in the transcript.\n\nMeeting: "+(state.sessName||"untitled")+"\n\nTranscript:\n"+text;
     gemini(prompt,false).then(function(out){$("#sumOut").textContent=out;$("#sumOut").style.display="";$("#copySumBtn").style.display="";})
-      .catch(function(e){$("#sumOut").textContent="تعذّر إنشاء الملخص: "+(e.message||"خطأ")+"\nتحقق من المفتاح، وإذا ظهر خطأ نموذج غيّر النموذج إلى gemini-2.5-flash من الإعدادات المتقدمة.";$("#sumOut").style.display="";})
+      .catch(function(e){$("#sumOut").textContent="تعذّر إنشاء الملخص: "+(e.message||"خطأ")+"\nاستخدم زر «اختبار مفتاح Gemini» في الإعدادات المتقدمة.";$("#sumOut").style.display="";})
       .then(function(){btn.textContent="إنشاء الملخص";btn.disabled=false;});
   };
-  var copySumBtn=$("#copySumBtn");
-  copySumBtn.onclick=function(){copyText($("#sumOut").textContent,copySumBtn,"نسخ الملخص");};
+  var copySumBtn=$("#copySumBtn");copySumBtn.onclick=function(){copyText($("#sumOut").textContent,copySumBtn,"نسخ الملخص");};
 
-  if(state.current.length){statusSub.textContent="اضغط للمتابعة على نفس الجلسة";}
+  /* ================= backup ================= */
+  var bakOut=$("#bakOut");
+  function storeInfo(){
+    var n=Store.all().filter(function(s){return s.lines&&s.lines.length;}).length;
+    var base="الحفظ في: "+Store.kind()+" · "+n+" اجتماع";
+    $("#storeInfo").textContent=base;
+    try{if(navigator.storage&&navigator.storage.estimate)navigator.storage.estimate().then(function(e){
+      if(e&&e.usage!==undefined)$("#storeInfo").textContent=base+" · المستخدم "+(e.usage/1048576).toFixed(1)+" ميجا";});}catch(e){}
+  }
+  $("#openBackup").onclick=function(){bakOut.textContent="";storeInfo();openSheet($("#bakSheet"));};
+  function buildBackup(withKeys){
+    var settings={};SETTING_KEYS.forEach(function(k){var v=load(k,null);if(v!==null)settings[k]=v;});
+    if(withKeys){settings.azKey=state.azKey;settings.gemKey=state.gemKey;}
+    return JSON.stringify({app:"meeting-translator",version:APP_VERSION,exported:new Date().toISOString(),settings:settings,
+      sessions:Store.all().filter(function(s){return s.lines&&s.lines.length;})});
+  }
+  $("#bakExport").onclick=function(){
+    Store.flush();var txt=buildBackup($("#bakKeys").checked);var d=new Date();
+    var name="translator-backup-"+d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+".json";
+    if(NATIVE&&window.AndroidSpeech.saveFile){var where="";try{where=window.AndroidSpeech.saveFile(name,txt);}catch(e){}
+      bakOut.textContent=where?("✓ تم الحفظ في: "+where):"✗ تعذّر الحفظ في الجوال.";return;}
+    try{var b=new Blob([txt],{type:"application/json"}),u=URL.createObjectURL(b),a=document.createElement("a");
+      a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove();},1500);
+      bakOut.textContent="✓ تم تنزيل الملف: "+name;}catch(e){bakOut.textContent="✗ تعذّر التنزيل.";}
+  };
+  $("#bakImportBtn").onclick=function(){$("#bakFile").click();};
+  $("#bakFile").onchange=function(){var f=this.files&&this.files[0];if(!f)return;var r=new FileReader();
+    r.onload=function(){importBackup(String(r.result));$("#bakFile").value="";};
+    r.onerror=function(){bakOut.textContent="✗ تعذّر قراءة الملف.";};r.readAsText(f);};
+  function importBackup(txt){
+    var o;try{o=JSON.parse(txt);}catch(e){bakOut.textContent="✗ الملف غير صالح.";return;}
+    if(!o||o.app!=="meeting-translator"||!Array.isArray(o.sessions)){bakOut.textContent="✗ هذا الملف ليس نسخة احتياطية من المترجم.";return;}
+    if(state.running)stopAll();
+    var added=0,upd=0,jobs=[];
+    o.sessions.forEach(function(s){if(!s||!s.id||!Array.isArray(s.lines))return;var c=Store.get(s.id);
+      if(!c){jobs.push(Store.put(s,true));added++;}else if((s.updated||0)>(c.updated||0)){jobs.push(Store.put(s,true));upd++;}});
+    var st=o.settings||{},changed=false;
+    SETTING_KEYS.concat(["azKey","gemKey"]).forEach(function(k){if(typeof st[k]==="string"&&st[k]!==""&&load(k,"")!==st[k]){save(k,st[k]);changed=true;}});
+    bakOut.textContent="✓ تم الاستيراد: "+added+" اجتماع جديد"+(upd?"، و"+upd+" محدّث":"")+(changed?". يعيد فتح التطبيق لتطبيق الإعدادات…":".");
+    Promise.all(jobs).then(function(){if(changed)setTimeout(function(){location.reload();},1200);else storeInfo();});
+  }
+
+  /* ================= boot ================= */
+  function boot(){
+    var s=state.curId&&Store.get(state.curId);
+    if(s&&s.lines&&s.lines.length){state.current=s.lines;showSession(s);setSessName(s.name);}
+    else{state.curId=null;save("curId","");setSessName(load("pendingName",""));}
+    state.ready=true;micBtn.disabled=false;setRunning(false);updateFirstRun();
+    if(state.curId)retryLines(state.curId);
+  }
+  Store.init().then(boot,boot);
 })();
 </script>
 </body>

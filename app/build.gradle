@@ -8,14 +8,29 @@ android {
         applicationId "com.khalid.translator"
         minSdk 24
         targetSdk 34
-        versionCode 3
-        versionName "2.1"
+        versionCode 9
+        versionName "3.1"
+    }
+
+    // Fixed signing key: every build is signed the same way, so new versions
+    // install OVER the old one on the phone (keeping meetings and settings).
+    signingConfigs {
+        fixed {
+            storeFile file('translator.keystore')
+            storeType 'pkcs12'
+            storePassword 'translator2026'
+            keyAlias 'translator'
+            keyPassword 'translator2026'
+        }
     }
 
     buildTypes {
+        debug {
+            signingConfig signingConfigs.fixed
+        }
         release {
             minifyEnabled false
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.fixed
         }
     }
     compileOptions {

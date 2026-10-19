@@ -2,7 +2,13 @@ package com.khalid.translator;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.webkit.ValueCallback;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -28,11 +34,17 @@ import androidx.webkit.WebViewAssetLoader;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int MIC_REQ = 101;
+    private static final int FILE_REQ = 102;
+    private ValueCallback<Uri[]> filePathCallback;
     private static final String APP_URL = "https://appassets.androidplatform.net/assets/index.html";
 
     private WebView web;
@@ -42,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     // Native speech recognition (Android WebView has no Web Speech API)
     private SpeechRecognizer recognizer;
     private boolean listening = false;
+    private boolean paused = false; // app in background: stop the mic, resume when back
     private String lang = "zh-CN";
     private final Handler handler = new Handler(Looper.getMainLooper());
     private AudioManager audio;
@@ -92,6 +105,23 @@ public class MainActivity extends AppCompatActivity {
                     request.deny();
                 });
             }
+
+            // lets the page's "import backup" button open the phone's file picker
+            @Override
+            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback, FileChooserParams params) {
+                if (filePathCallback != null) filePathCallback.onReceiveValue(null);
+                filePathCallback = callback;
+                try {
+                    Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
+                    i.setType("*/*");
+                    startActivityForResult(Intent.createChooser(i, "اختر ملف النسخة الاحتياطية"), FILE_REQ);
+                } catch (Exception e) {
+                    filePathCallback = null;
+                    return false;
+                }
+                return true;
+            }
         });
 
         web.addJavascriptInterface(new SpeechBridge(), "AndroidSpeech");
@@ -107,6 +137,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void askMic() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, MIC_REQ);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == FILE_REQ && filePathCallback != null) {
+            Uri[] result = null;
+            if (resultCode == RESULT_OK && data != null && data.getData() != null) result = new Uri[]{data.getData()};
+            filePathCallback.onReceiveValue(result);
+            filePathCallback = null;
+        }
     }
 
     @Override
@@ -150,6 +191,35 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        // Saves the backup file to Downloads. Returns where it was saved, or "" on failure.
+        @JavascriptInterface
+        public String saveFile(String name, String content) {
+            byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    ContentValues v = new ContentValues();
+                    v.put(MediaStore.Downloads.DISPLAY_NAME, name);
+                    v.put(MediaStore.Downloads.MIME_TYPE, "application/json");
+                    v.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+                    Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
+                    if (uri == null) return "";
+                    try (OutputStream os = getContentResolver().openOutputStream(uri)) {
+                        if (os == null) return "";
+                        os.write(bytes);
+                    }
+                    return "Download/" + name;
+                } else {
+                    File dir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+                    if (dir == null) return "";
+                    File f = new File(dir, name);
+                    try (FileOutputStream fos = new FileOutputStream(f)) { fos.write(bytes); }
+                    return f.getAbsolutePath();
+                }
+            } catch (Exception e) {
+                return "";
+            }
+        }
+
         @JavascriptInterface
         public boolean available() {
             return SpeechRecognizer.isRecognitionAvailable(MainActivity.this);
@@ -184,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void listenOnce() {
-        if (!listening || recognizer == null) return;
+        if (!listening || paused || recognizer == null) return;
         Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang);
@@ -202,12 +272,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restartSoon(long delay) {
-        if (!listening) return;
+        if (!listening || paused) return;
         handler.postDelayed(this::listenOnce, delay);
     }
 
     private void stopListening() {
         listening = false;
+        paused = false;
         handler.removeCallbacksAndMessages(null);
         if (recognizer != null) {
             try { recognizer.cancel(); } catch (Exception ignored) { }
@@ -277,6 +348,28 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (listening) {
+            paused = true;
+            handler.removeCallbacksAndMessages(null);
+            if (recognizer != null) {
+                try { recognizer.cancel(); } catch (Exception ignored) { }
+            }
+            unmute.run();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (paused) {
+            paused = false;
+            if (listening) handler.postDelayed(this::listenOnce, 300);
+        }
+    }
 
     @Override
     protected void onDestroy() {
